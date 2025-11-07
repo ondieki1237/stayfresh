@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USSD Simulator - Stay Fresh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, oklch(0.65 0.22 145), oklch(0.828 0.189 84.429));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .phone {
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .screen {
+            background: #e8e8e8;
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .ussd-code {
+            font-size: 20px;
+            font-weight: bold;
+            color: oklch(0.65 0.22 145);
+        }
+
+        .display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: #333;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: oklch(0.65 0.22 145);
+        }
+
+        .input-area button {
+            padding: 12px 24px;
+            background: oklch(0.65 0.22 145);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-area button:hover {
+            background: oklch(0.6 0.22 145);
+            transform: scale(1.05);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .key {
+            aspect-ratio: 1;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key:hover {
+            background: oklch(0.65 0.22 145);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .clear-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .back-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status.ended {
+            background: #f44336;
+            color: white;
+        }
+
+        .phone-input {
+            margin-bottom: 15px;
+        }
+
+        .phone-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .loader.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid oklch(0.65 0.22 145);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="phone">
+            <div class="screen">
+                <div class="header">
+                    <h1>🌱 Stay Fresh USSD</h1>
+                    <div class="ussd-code">*384*5000#</div>
+                </div>
+
+                <div class="phone-input">
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        placeholder="Enter phone number (+254...)" 
+                        value="+254712345678"
+                    />
+                </div>
+
+                <div class="display" id="display">
+Welcome to Stay Fresh USSD Simulator!
+
+Enter your phone number and press "Start Session" to begin.
+
+This simulator mimics the USSD experience on feature phones.
+                </div>
+
+                <div class="loader" id="loader">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+
+                <div class="input-area">
+                    <input 
+                        type="text" 
+                        id="userInput" 
+                        placeholder="Enter option..." 
+                        disabled
+                    />
+                    <button onclick="sendInput()" id="sendBtn" disabled>Send</button>
+                </div>
+
+                <div class="keypad">
+                    <div class="key" onclick="pressKey('1')">1</div>
+                    <div class="key" onclick="pressKey('2')">2</div>
+                    <div class="key" onclick="pressKey('3')">3</div>
+                    <div class="key" onclick="pressKey('4')">4</div>
+                    <div class="key" onclick="pressKey('5')">5</div>
+                    <div class="key" onclick="pressKey('6')">6</div>
+                    <div class="key" onclick="pressKey('7')">7</div>
+                    <div class="key" onclick="pressKey('8')">8</div>
+                    <div class="key" onclick="pressKey('9')">9</div>
+                    <div class="key" onclick="pressKey('*')">*</div>
+                    <div class="key" onclick="pressKey('0')">0</div>
+                    <div class="key" onclick="pressKey('#')">#</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn start-btn" onclick="startSession()">Start Session</button>
+                    <button class="action-btn clear-btn" onclick="clearInput()">Clear</button>
+                    <button class="action-btn back-btn" onclick="endSession()">End</button>
+                </div>
+
+                <div class="status" id="status">Session: Not Started</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionActive = false;
+        let currentText = "";
+
+        function pressKey(key) {
+            if (!sessionActive) return;
+            
+            const input = document.getElementById('userInput');
+            input.value += key;
+        }
+
+        function clearInput() {
+            document.getElementById('userInput').value = '';
+        }
+
+        async function startSession() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            
+            if (!phoneNumber) {
+                alert('Please enter a phone number');
+                return;
+            }
+
+            sessionActive = true;
+            currentText = "";
+            document.getElementById('userInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            
+            updateStatus('Session Active', true);
+            
+            await makeUSSDRequest(phoneNumber, "");
+        }
+
+        async function sendInput() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const input = document.getElementById('userInput').value;
+            
+            if (!input) return;
+            
+            currentText = currentText ? currentText + "*" + input : input;
+            
+            await makeUSSDRequest(phoneNumber, currentText);
+            
+            document.getElementById('userInput').value = '';
+        }
+
+        async function makeUSSDRequest(phoneNumber, text) {
+            const display = document.getElementById('display');
+            const loader = document.getElementById('loader');
+            
+            loader.classList.add('active');
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/ussd/simulate/${encodeURIComponent(phoneNumber)}?text=${encodeURIComponent(text)}`);
+                const data = await response.json();
+                
+                loader.classList.remove('active');
+                
+                if (data.success) {
+                    display.textContent = data.output;
+                    
+                    if (!data.continueSession) {
+                        endSession();
+                    }
+                } else {
+                    display.textContent = `Error: ${data.error || 'Unknown error'}`;
+                }
+            } catch (error) {
+                loader.classList.remove('active');
+                display.textContent = `Network Error: ${error.message}\n\nMake sure the server is running on http://localhost:5000`;
+            }
+        }
+
+        function endSession() {
+            sessionActive = false;
+            currentText = "";
+            document.getElementById('userInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('userInput').value = '';
+            
+            updateStatus('Session Ended', false);
+        }
+
+        function updateStatus(message, active) {
+            const status = document.getElementById('status');
+            status.textContent = `Session: ${message}`;
+            status.className = 'status ' + (active ? 'active' : 'ended');
+        }
+
+        // Allow Enter key to send
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendInput();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import marketRoutes from "./routes/market.js"
 import marketplaceRoutes from "./routes/marketplace.js"
 import trainingRoutes from "./routes/training.js"
 import chamaRoutes from "./routes/chamas.js"
+import ussdRoutes from "./routes/ussd.js"
 import { startPowerScheduler } from "./services/powerScheduler.js"
 
 dotenv.config()
@@ -39,6 +40,7 @@ app.use("/api/market", marketRoutes)
 app.use("/api/marketplace", marketplaceRoutes)
 app.use("/api/training", trainingRoutes)
 app.use("/api/chamas", chamaRoutes)
+app.use("/api/ussd", ussdRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
