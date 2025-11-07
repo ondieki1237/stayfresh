@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { API_BASE } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -67,6 +68,7 @@ export default function ChamaManagement() {
     monthlyFee: "",
     notes: "",
   })
+  const [membersList, setMembersList] = useState<{ name: string; phone: string; farmerId?: string }[]>([])
   const [marketDays, setMarketDays] = useState<MarketDay[]>([])
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function ChamaManagement() {
 
   const fetchChamas = async () => {
     try {
-      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/chamas")
+  const response = await fetch(`${API_BASE || "/api"}/chamas`)
       const data = await response.json()
       setChamas(data)
     } catch (error) {
@@ -88,7 +90,7 @@ export default function ChamaManagement() {
 
   const fetchRooms = async () => {
     try {
-      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/rooms")
+  const response = await fetch(`${API_BASE || "/api"}/rooms`)
       const data = await response.json()
       // Only show available rooms or rooms already assigned to this chama
       setRooms(data.filter((room: Room) => room.status === "Available" || room.roomType === "shared"))
@@ -107,8 +109,8 @@ export default function ChamaManagement() {
     
     try {
       const url = editingChama
-        ? `https://www.kisumu.codewithseth.co.ke/api/chamas/${editingChama._id}`
-        : "https://www.kisumu.codewithseth.co.ke/api/chamas"
+        ? `${API_BASE || "/api"}/chamas/${editingChama._id}`
+        : `${API_BASE || "/api"}/chamas`
       
       const method = editingChama ? "PUT" : "POST"
       
@@ -119,6 +121,7 @@ export default function ChamaManagement() {
           ...formData,
           monthlyFee: parseFloat(formData.monthlyFee) || 0,
           marketDays,
+          members: membersList,
         }),
       })
 
@@ -136,7 +139,7 @@ export default function ChamaManagement() {
     if (!confirm("Are you sure you want to delete this chama?")) return
 
     try {
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/chamas/${id}`, {
+      const response = await fetch(`${API_BASE || "/api"}/chamas/${id}`, {
         method: "DELETE",
       })
 
@@ -150,7 +153,7 @@ export default function ChamaManagement() {
 
   const handleAssignRoom = async (chamaId: string, roomId: string) => {
     try {
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/chamas/${chamaId}/assign-room`, {
+      const response = await fetch(`${API_BASE || "/api"}/chamas/${chamaId}/assign-room`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId }),
@@ -178,6 +181,7 @@ export default function ChamaManagement() {
     })
     setMarketDays([])
     setEditingChama(null)
+    setMembersList([])
   }
 
   const openEditDialog = (chama: Chama) => {
@@ -193,8 +197,18 @@ export default function ChamaManagement() {
       notes: chama.notes || "",
     })
     setMarketDays(chama.marketDays || [])
+    // Load members into membersList
+    setMembersList((chama as any).members?.map((m: any) => ({ name: m.name || "", phone: m.phone || "", farmerId: m.farmer })) || [])
     setIsCreateOpen(true)
   }
+
+  const addMember = () => setMembersList(prev => [...prev, { name: "", phone: "" }])
+  const updateMember = (index: number, field: "name" | "phone", value: string) => {
+    const copy = [...membersList]
+    copy[index] = { ...copy[index], [field]: value }
+    setMembersList(copy)
+  }
+  const removeMember = (index: number) => setMembersList(prev => prev.filter((_, i) => i !== index))
 
   const addMarketDay = () => {
     setMarketDays([...marketDays, { day: "Monday", startTime: "06:00", endTime: "18:00", powerOffDuringMarket: true }])

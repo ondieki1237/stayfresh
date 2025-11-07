@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { API_BASE } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -83,7 +84,7 @@ export default function BookStocking({
     setBooking(true)
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/stocking/book`, {
+      const response = await fetch(`${API_BASE || "/api"}/stocking/book`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,7 +104,7 @@ export default function BookStocking({
 
       if (response.ok) {
         const data = await response.json()
-        alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches $${targetPrice}/kg`)
+  alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches KES ${parseFloat(targetPrice).toFixed(2)}/kg`)
         
         // Reset form
         setProduceType("")
@@ -220,7 +221,7 @@ export default function BookStocking({
           {/* Estimated Value */}
           <div className="space-y-2">
             <Label htmlFor="estimatedValue">
-              Initial Investment/Value ($) <span className="text-destructive">*</span>
+              Initial Investment/Value (KES) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="estimatedValue"
@@ -232,8 +233,8 @@ export default function BookStocking({
               placeholder="Total cost/value of produce"
             />
             {quantity && estimatedValue && (
-              <p className="text-xs text-muted-foreground">
-                Cost per kg: <strong>${pricePerKg()}</strong>
+                <p className="text-xs text-muted-foreground">
+                Cost per kg: <strong>KES {pricePerKg()}</strong>
               </p>
             )}
           </div>
@@ -261,7 +262,7 @@ export default function BookStocking({
           {/* Target Price */}
           <div className="space-y-2">
             <Label htmlFor="targetPrice">
-              Target Selling Price ($/kg) <span className="text-destructive">*</span>
+              Target Selling Price (KES/kg) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="targetPrice"
@@ -281,19 +282,19 @@ export default function BookStocking({
           {quantity && estimatedValue && targetPrice && (
             <Card className="bg-gradient-to-r from-chart-4/10 to-primary/10 p-4">
               <h4 className="font-semibold mb-3 text-foreground">💰 Potential Earnings</h4>
-              <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Initial Investment</span>
-                  <span className="font-semibold">${parseFloat(estimatedValue).toFixed(2)}</span>
+                  <span className="font-semibold">KES {parseFloat(estimatedValue).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Target Value</span>
-                  <span className="font-semibold text-primary">${calculatePotentialEarnings()}</span>
+                  <span className="font-semibold text-primary">KES {calculatePotentialEarnings()}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between">
                   <span className="text-muted-foreground font-medium">Expected Profit</span>
                   <span className="font-bold text-chart-4 text-lg">
-                    ${calculateProfit()}
+                    KES {calculateProfit()}
                     {estimatedValue !== "0" && (
                       <span className="text-xs ml-1">
                         ({(((parseFloat(calculateProfit())) / parseFloat(estimatedValue)) * 100).toFixed(1)}%)

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { API_BASE } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
@@ -96,10 +97,10 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
       const checkIsAdmin = userEmail === "admin@stayfresh.com" || userEmail === "superuser@stayfresh.com"
       
       // Admin can see all rooms, regular users see only their rented rooms
-      const endpoint = checkIsAdmin 
-        ? `https://www.kisumu.codewithseth.co.ke/api/rooms`
-        : `https://www.kisumu.codewithseth.co.ke/api/rooms/farmer/${farmerId}`
-      
+      const endpoint = checkIsAdmin
+        ? `${API_BASE || "/api"}/rooms`
+        : `${API_BASE || "/api"}/rooms/farmer/${farmerId}`
+
       const response = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -136,7 +137,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
   const fetchStockingForRoom = async (roomId: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/stocking/room/${roomId}`, {
+      const response = await fetch(`${API_BASE || "/api"}/stocking/room/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -152,7 +153,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
   const fetchProduceForRoom = async (roomId: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/produce/room/${roomId}`, {
+      const response = await fetch(`${API_BASE || "/api"}/produce/room/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -168,7 +169,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
   const fetchBillingForRoom = async (roomId: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/billing/room/${roomId}`, {
+      const response = await fetch(`${API_BASE || "/api"}/billing/room/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -186,7 +187,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
     
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/rooms/${roomId}/request-release`, {
+      const response = await fetch(`${API_BASE || "/api"}/rooms/${roomId}/request-release`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -221,7 +222,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `https://www.kisumu.codewithseth.co.ke/api/rooms/${selectedRoomForAbandon._id}/abandon`,
+        `${API_BASE || "/api"}/rooms/${selectedRoomForAbandon._id}/abandon`,
         {
           method: "POST",
           headers: {
