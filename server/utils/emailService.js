@@ -177,20 +177,20 @@ export const sendProduceSoldNotification = async (farmer, produce, saleDetails) 
             </div>
             <div class="row">
               <span>Sale Price:</span>
-              <strong>$${saleDetails.salePrice}/kg</strong>
+              <strong>KSH ${saleDetails.salePrice}/kg</strong>
             </div>
             <div class="row">
               <span>Total Revenue:</span>
-              <strong class="highlight">$${(saleDetails.salePrice * produce.quantity).toFixed(2)}</strong>
+              <strong class="highlight">KSH ${(saleDetails.salePrice * produce.quantity).toFixed(2)}</strong>
             </div>
             ${produce.purchasePrice ? `
             <div class="row">
               <span>Purchase Cost:</span>
-              <strong>$${produce.purchasePrice}/kg</strong>
+              <strong>KSH ${produce.purchasePrice}/kg</strong>
             </div>
             <div class="row">
               <span>Total Profit:</span>
-              <strong style="color: #22c55e;">$${profit.toFixed(2)}</strong>
+              <strong style="color: #22c55e;">KSH ${profit.toFixed(2)}</strong>
             </div>
             <div class="row">
               <span>Profit Margin:</span>
@@ -255,13 +255,13 @@ export const sendOfferReceivedNotification = async (farmer, listing, offer) => {
             <h3>📦 ${listing.title}</h3>
             <p><strong>Buyer:</strong> ${offer.buyerName}</p>
             <p><strong>Contact:</strong> ${offer.buyerPhone}</p>
-            <p><strong>Offered Price:</strong> $${offer.offeredPrice}/kg</p>
+            <p><strong>Offered Price:</strong> KSH ${offer.offeredPrice}/kg</p>
             <p><strong>Quantity:</strong> ${offer.quantity} kg</p>
-            <p><strong>Total Value:</strong> $${(offer.offeredPrice * offer.quantity).toFixed(2)}</p>
+            <p><strong>Total Value:</strong> KSH ${(offer.offeredPrice * offer.quantity).toFixed(2)}</p>
             ${offer.message ? `<p><strong>Message:</strong> "${offer.message}"</p>` : ''}
           </div>
 
-          <p><strong>Your Listed Price:</strong> $${listing.pricePerKg}/kg</p>
+          <p><strong>Your Listed Price:</strong> KSH ${listing.pricePerKg}/kg</p>
           ${offer.offeredPrice < listing.pricePerKg 
             ? `<p style="color: #f59e0b;">⚠️ This offer is below your listed price.</p>` 
             : `<p style="color: #22c55e;">✅ This offer matches or exceeds your listed price!</p>`
@@ -412,23 +412,23 @@ export const sendBillingReminderNotification = async (farmer, billing, room) => 
             </div>
             <div class="row">
               <span>Base Amount:</span>
-              <strong>$${billing.baseAmount.toFixed(2)}</strong>
+              <strong>KSH ${billing.baseAmount.toFixed(2)}</strong>
             </div>
             ${billing.discount > 0 ? `
             <div class="row">
               <span>Discount:</span>
-              <strong style="color: #22c55e;">-$${billing.discount.toFixed(2)}</strong>
+              <strong style="color: #22c55e;">-KSH ${billing.discount.toFixed(2)}</strong>
             </div>
             ` : ''}
             ${billing.lateFee > 0 ? `
             <div class="row">
               <span>Late Fee:</span>
-              <strong style="color: #ef4444;">+$${billing.lateFee.toFixed(2)}</strong>
+              <strong style="color: #ef4444;">+KSH ${billing.lateFee.toFixed(2)}</strong>
             </div>
             ` : ''}
             <div class="row">
               <span>Amount Due:</span>
-              <strong class="total">$${billing.amountDue.toFixed(2)}</strong>
+              <strong class="total">KSH ${billing.amountDue.toFixed(2)}</strong>
             </div>
             <div class="row">
               <span>Due Date:</span>
@@ -497,7 +497,7 @@ export const sendUrgentProduceNotification = async (farmer, produce) => {
             <h3>Produce Details:</h3>
             <p><strong>Type:</strong> ${produce.produceType} ${produce.variety ? `(${produce.variety})` : ''}</p>
             <p><strong>Quantity:</strong> ${produce.quantity} kg</p>
-            <p><strong>Current Market Price:</strong> $${produce.currentMarketPrice}/kg</p>
+            <p><strong>Current Market Price:</strong> KSH ${produce.currentMarketPrice}/kg</p>
             <p><strong>Days in Storage:</strong> ${produce.daysInStorage} days</p>
             <p><strong>Condition:</strong> ${produce.condition}</p>
           </div>

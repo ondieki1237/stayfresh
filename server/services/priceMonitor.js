@@ -232,19 +232,19 @@ async function sendPriceAlert(stocking, currentPrice) {
             <h2 style="margin-top: 0; color: oklch(0.65 0.22 145);">Great News, ${farmer.firstName}!</h2>
             <p style="font-size: 16px;">
               Your <strong>${stocking.produceType}</strong> in <strong>Room ${room.roomNumber}</strong> 
-              has reached your target price of <strong>$${stocking.targetPrice}/kg</strong>!
+              has reached your target price of <strong>KSH ${stocking.targetPrice}/kg</strong>!
             </p>
           </div>
 
           <div class="stats">
             <div class="stat-box highlight">
               <div class="label">Current Market Price</div>
-              <div class="value">$${currentPrice}</div>
+              <div class="value">KSH ${currentPrice}</div>
               <div style="font-size: 12px; color: #666;">/kg</div>
             </div>
             <div class="stat-box">
               <div class="label">Your Target</div>
-              <div class="value">$${stocking.targetPrice}</div>
+              <div class="value">KSH ${stocking.targetPrice}</div>
               <div style="font-size: 12px; color: #666;">/kg</div>
             </div>
           </div>
@@ -257,15 +257,15 @@ async function sendPriceAlert(stocking, currentPrice) {
             </div>
             <div class="detail-row">
               <span class="detail-label">Initial Investment</span>
-              <span class="detail-value">$${stocking.estimatedValue.toFixed(2)}</span>
+              <span class="detail-value">KSH ${stocking.estimatedValue.toFixed(2)}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Current Value</span>
-              <span class="detail-value" style="color: oklch(0.65 0.22 145);">$${potentialEarnings}</span>
+              <span class="detail-value" style="color: oklch(0.65 0.22 145);">KSH ${potentialEarnings}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Estimated Profit</span>
-              <span class="detail-value" style="color: oklch(0.828 0.189 84.429);">$${estimatedProfit} (${priceIncrease}%)</span>
+              <span class="detail-value" style="color: oklch(0.828 0.189 84.429);">KSH ${estimatedProfit} (${priceIncrease}%)</span>
             </div>
           </div>
 

@@ -178,7 +178,7 @@ class USSDService {
 
     produce.slice(0, 5).forEach((p, index) => {
       info += `${index + 1}. ${p.name}\n`
-      info += `   ${p.quantity}kg - KES ${p.currentPrice}/kg\n`
+  info += `   ${p.quantity}kg - KSH ${p.currentPrice}/kg\n`
     })
 
     if (produce.length > 5) {
@@ -209,13 +209,13 @@ class USSDService {
       : "0.00"
 
     const info = `END Billing Information:\n\n` +
-      `💳 Total Bill: KES ${billing.amountDue.toFixed(2)}\n` +
+  `💳 Total Bill: KSH ${billing.amountDue.toFixed(2)}\n` +
       `👥 Members: ${chama.totalMembers}\n` +
-      `💰 Per Member: KES ${perMember}\n` +
+  `💰 Per Member: KSH ${perMember}\n` +
       `⚡ Energy Used: ${billing.energyUsed}kWh\n` +
       `📅 Period: ${new Date(billing.billingDate).toLocaleDateString()}\n` +
       `✅ Status: ${billing.paymentStatus}\n\n` +
-      `Monthly Fee: KES ${chama.monthlyFee.toLocaleString()}`
+  `Monthly Fee: KSH ${chama.monthlyFee.toLocaleString()}`
 
     return this.endSession(info)
   }
@@ -303,13 +303,13 @@ class USSDService {
 
     const room = chama.sharedRoom
     const savings = room.powerSavings || 0
-    const costPerKwh = 25 // KES per kWh
+  const costPerKwh = 25 // KSH per kWh
     const moneySaved = savings * costPerKwh
     const marketDaysPerMonth = chama.marketDays?.length * 4 || 0
 
     const info = `END Power Savings Report:\n\n` +
       `⚡ Energy Saved: ${savings.toFixed(2)}kWh\n` +
-      `💰 Money Saved: KES ${moneySaved.toFixed(2)}\n` +
+  `💰 Money Saved: KSH ${moneySaved.toFixed(2)}\n` +
       `📅 Market Days/Month: ${marketDaysPerMonth}\n` +
       `🌱 CO2 Reduced: ${(savings * 0.5).toFixed(2)}kg\n\n` +
       `Your Chama is saving money and helping the environment!`

@@ -1,4 +1,5 @@
 import express from "express"
+import PDFDocument from "pdfkit"
 import Stocking from "../models/Stocking.js"
 import Room from "../models/Room.js"
 import Farmer from "../models/Farmer.js"
@@ -272,3 +273,71 @@ router.get("/farmer/:farmerId/stats", authMiddleware, async (req, res) => {
 })
 
 export default router
+
+// Receipt endpoint - returns a PDF receipt for a stocking
+router.get("/:id/receipt", authMiddleware, async (req, res) => {
+  try {
+    const stocking = await Stocking.findById(req.params.id)
+      .populate("room", "roomNumber capacity")
+      .populate("farmer", "firstName lastName email phone")
+
+    if (!stocking) return res.status(404).json({ message: "Stocking not found" })
+
+    // Create PDF document and stream to response
+    const doc = new PDFDocument({ size: "A4", margin: 50 })
+
+    res.setHeader("Content-Type", "application/pdf")
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=stocking-${stocking._id}.pdf`
+    )
+
+    doc.pipe(res)
+
+    // Header
+    doc.fontSize(20).text("Stay Fresh - Stocking Receipt", { align: "center" })
+    doc.moveDown()
+
+    // Basic info
+    doc.fontSize(12)
+      .text(`Receipt ID: ${stocking._id}`)
+      .text(`Date: ${new Date(stocking.stockedAt).toLocaleString()}`)
+      .moveDown()
+
+    // Farmer and room
+    doc.fontSize(14).text("Farmer & Room", { underline: true })
+    doc.moveDown(0.4)
+    doc.fontSize(12)
+      .text(`Name: ${stocking.farmer?.firstName || ""} ${stocking.farmer?.lastName || ""}`)
+      .text(`Email: ${stocking.farmer?.email || "N/A"}`)
+      .text(`Phone: ${stocking.farmer?.phone || "N/A"}`)
+      .text(`Room: ${stocking.room?.roomNumber || "N/A"}`)
+      .moveDown()
+
+    // Stocking details
+    doc.fontSize(14).text("Stocking Details", { underline: true })
+    doc.moveDown(0.4)
+    doc.fontSize(12)
+      .text(`Produce: ${stocking.produceType}`)
+      .text(`Quantity: ${stocking.quantity} kg`)
+      .text(`Condition: ${stocking.condition || "N/A"}`)
+      .text(`Current Market Price (per kg): KSH ${Number(stocking.currentMarketPrice || 0).toFixed(2)}`)
+      .text(`Target Price (per kg): KSH ${Number(stocking.targetPrice || 0).toFixed(2)}`)
+      .text(`Estimated Value: KSH ${Number(stocking.estimatedValue || 0).toFixed(2)}`)
+      .moveDown()
+
+    if (stocking.notes) {
+      doc.fontSize(12).text("Notes:")
+      doc.fontSize(11).text(stocking.notes)
+      doc.moveDown()
+    }
+
+    doc.moveDown(2)
+    doc.fontSize(10).text("Thank you for using Stay Fresh Management System.")
+
+    doc.end()
+  } catch (error) {
+    console.error("Error generating receipt:", error)
+    res.status(500).json({ message: error.message })
+  }
+})

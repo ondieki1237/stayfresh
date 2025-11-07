@@ -55,7 +55,7 @@ const seedDatabase = async () => {
         conditioning: ["Excellent", "Good", "Fair"][Math.floor(Math.random() * 3)],
         conditioningScore: Math.floor(Math.random() * 30) + 70,
         status: i <= 15 ? "Available" : ["Occupied", "Maintenance"][Math.floor(Math.random() * 2)],
-        rentalRate: Math.floor(Math.random() * 300) + 200, // $200-$500 per month
+  rentalRate: Math.floor(Math.random() * 300) + 200, // KSH 200-500 per month
         airCirculation: "Good",
         lightExposure: "None",
         lastMaintenance: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
