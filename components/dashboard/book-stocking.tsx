@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { API_BASE } from "@/lib/api"
+import { getToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -83,8 +84,22 @@ export default function BookStocking({
 
     setBooking(true)
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE || "/api"}/stocking/book`, {
+      const token = getToken()
+      
+      if (!token) {
+        alert("⚠️ Please login again to continue")
+        return
+      }
+      
+      console.log("Booking stocking with:", {
+        url: `${API_BASE}/stocking/book`,
+        roomId,
+        farmerId,
+        produceType,
+        quantity: quantityNum,
+      })
+      
+      const response = await fetch(`${API_BASE}/stocking/book`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -102,9 +117,11 @@ export default function BookStocking({
         }),
       })
 
+      console.log("Response status:", response.status)
+      
       if (response.ok) {
         const data = await response.json()
-  alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches KSH ${parseFloat(targetPrice).toFixed(2)}/kg`)
+        alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches KSH ${parseFloat(targetPrice).toFixed(2)}/kg`)
         
         // Reset form
         setProduceType("")
@@ -117,12 +134,18 @@ export default function BookStocking({
         onStockingBooked?.()
         onClose()
       } else {
-        const error = await response.json()
-        alert(`❌ ${error.message || "Failed to book stocking"}`)
+        const errorText = await response.text()
+        console.error("Error response:", errorText)
+        try {
+          const error = JSON.parse(errorText)
+          alert(`❌ ${error.message || "Failed to book stocking"}`)
+        } catch {
+          alert(`❌ Server error: ${response.status} ${response.statusText}\n${errorText.substring(0, 200)}`)
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error booking stocking:", error)
-      alert("❌ Error booking stocking. Please try again.")
+      alert(`❌ Error booking stocking: ${error.message}\n\nPlease check:\n1. Backend server is running\n2. You're connected to internet\n3. API URL is correct: ${API_BASE}`)
     } finally {
       setBooking(false)
     }

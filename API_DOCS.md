@@ -2,7 +2,7 @@
 
 Complete API reference for the Stay Fresh Management System backend.
 
-**Base URL:** `http://localhost:5000/api`
+**Base URL:** `https://www.kisumu.codewithseth.co.ke/api`
 
 ## 🔐 Authentication
 
@@ -786,24 +786,24 @@ GET /api/admin/analytics/revenue?period=month
 ### Register and Login
 ```bash
 # Register
-curl -X POST http://localhost:5000/api/farmers/register \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/farmers/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"pass123","firstName":"John","lastName":"Doe","phone":"+1234567890","location":"NY"}'
 
 # Login
-curl -X POST http://localhost:5000/api/farmers/login \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/farmers/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"pass123"}'
 ```
 
 ### Get Available Rooms
 ```bash
-curl http://localhost:5000/api/rooms/available
+curl https://www.kisumu.codewithseth.co.ke/api/rooms/available
 ```
 
 ### Add Produce (with token)
 ```bash
-curl -X POST http://localhost:5000/api/produce \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/produce \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -d '{"farmer":"FARMER_ID","room":"ROOM_ID","produceType":"tomato","quantity":100,"currentMarketPrice":50}'

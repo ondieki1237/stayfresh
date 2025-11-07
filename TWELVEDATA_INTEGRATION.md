@@ -52,7 +52,7 @@ Authorization: Bearer <token>
 
 **Example Request:**
 ```bash
-curl -X GET "http://localhost:5000/api/market-insights/quote/corn" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -340,15 +340,15 @@ cd server
 npm install axios
 
 # Test quote endpoint
-curl -X GET "http://localhost:5000/api/market-insights/quote/corn" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
 # Test movers endpoint
-curl -X GET "http://localhost:5000/api/market-insights/movers" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/movers" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
 # Check API status
-curl -X GET "http://localhost:5000/api/market-insights/api-status" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/api-status" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 

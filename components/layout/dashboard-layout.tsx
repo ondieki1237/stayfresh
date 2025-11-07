@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
+import { logout } from "@/lib/auth"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -17,10 +18,7 @@ export default function DashboardLayout({ children, farmer }: DashboardLayoutPro
   const [sidebarOpen, setSidebarOpen] = useState(false) // Default closed for mobile
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("farmerId")
-    localStorage.removeItem("userEmail")
-    router.push("/")
+    logout(router)
   }
 
   const toggleSidebar = () => {

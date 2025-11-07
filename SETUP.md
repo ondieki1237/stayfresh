@@ -73,7 +73,7 @@ cd ..
 Create `.env.local` in the root directory:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_URL=https://www.kisumu.codewithseth.co.ke/api
 ```
 
 #### Backend Environment (server/.env)
@@ -131,8 +131,8 @@ npm run dev:server
 ### Step 7: Access the Application
 
 - **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:5000/api
-- **Health Check:** http://localhost:5000/api/health
+- **Backend API:** https://www.kisumu.codewithseth.co.ke/api
+- **Health Check:** https://www.kisumu.codewithseth.co.ke/api/health
 
 ## 🎯 First Steps
 
@@ -223,12 +223,12 @@ Test the API using curl or Postman:
 
 ### Health Check
 ```bash
-curl http://localhost:5000/api/health
+curl https://www.kisumu.codewithseth.co.ke/api/health
 ```
 
 ### Register a Farmer
 ```bash
-curl -X POST http://localhost:5000/api/farmers/register \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/farmers/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -242,12 +242,12 @@ curl -X POST http://localhost:5000/api/farmers/register \
 
 ### Get Available Rooms
 ```bash
-curl http://localhost:5000/api/rooms/available
+curl https://www.kisumu.codewithseth.co.ke/api/rooms/available
 ```
 
 ### Get Market Data
 ```bash
-curl http://localhost:5000/api/market/produce/tomato
+curl https://www.kisumu.codewithseth.co.ke/api/market/produce/tomato
 ```
 
 ## 🎨 Customization

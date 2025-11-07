@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { saveAuth } from "@/lib/auth"
 
 interface RegisterFormProps {
   onSuccess: () => void
@@ -46,8 +47,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         return
       }
 
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("farmerId", data.farmer._id)
+      // Save authentication with 7-day expiry
+      saveAuth(data.token, data.farmer._id, data.farmer.email || formData.email, false)
       onSuccess()
     } catch (err) {
       setError("Connection error. Please try again.")

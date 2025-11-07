@@ -58,7 +58,7 @@ Bash script to test all endpoints (requires JWT token)
 
 ### 1. Get Real-Time Commodity Prices
 ```bash
-curl -X GET "http://localhost:5000/api/market-insights/quote/corn" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -72,14 +72,14 @@ Response includes:
 ### 2. Track Market Movers
 See which commodities are gaining/losing the most:
 ```bash
-curl -X GET "http://localhost:5000/api/market-insights/movers" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/movers" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### 3. Get Technical Analysis
 Use trading indicators like RSI, Moving Averages:
 ```bash
-curl -X GET "http://localhost:5000/api/market-insights/technical/coffee?indicator=rsi" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/technical/coffee?indicator=rsi" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -135,7 +135,7 @@ Your free TwelveData plan includes:
 2. **Get a JWT token:**
    ```bash
    # Login first
-   curl -X POST "http://localhost:5000/api/farmers/login" \
+   curl -X POST "https://www.kisumu.codewithseth.co.ke/api/farmers/login" \
      -H "Content-Type: application/json" \
      -d '{"email":"your-email@example.com","password":"your-password"}'
    ```
@@ -149,15 +149,15 @@ Your free TwelveData plan includes:
 4. **Or test individual endpoints:**
    ```bash
    # Test quote
-   curl -X GET "http://localhost:5000/api/market-insights/quote/corn" \
+   curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn" \
      -H "Authorization: Bearer YOUR_TOKEN"
 
    # Test movers
-   curl -X GET "http://localhost:5000/api/market-insights/movers" \
+   curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/movers" \
      -H "Authorization: Bearer YOUR_TOKEN"
 
    # Check API status
-   curl -X GET "http://localhost:5000/api/market-insights/api-status" \
+   curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/api-status" \
      -H "Authorization: Bearer YOUR_TOKEN"
    ```
 

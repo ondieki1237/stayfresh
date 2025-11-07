@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { saveAuth } from "@/lib/auth"
 
 export default function LoginForm() {
   const router = useRouter()
@@ -39,14 +40,12 @@ export default function LoginForm() {
         return
       }
 
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("farmerId", data.farmer._id)
-      localStorage.setItem("userEmail", data.farmer.email)
-      
-      // Check if admin and redirect accordingly
+      // Save authentication with 7-day expiry
       const isAdmin = data.farmer.email === "admin@stayfresh.com" || data.farmer.email === "superuser@stayfresh.com"
+      saveAuth(data.token, data.farmer._id, data.farmer.email, isAdmin)
+      
+      // Redirect based on user role
       if (isAdmin) {
-        localStorage.setItem("isAdmin", "true")
         router.push("/admin")
       } else {
         router.push("/dashboard")

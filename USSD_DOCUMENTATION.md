@@ -126,7 +126,7 @@ POST https://yourdomain.com/api/ussd
 
 ### 1. Test Endpoint
 ```bash
-curl -X POST http://localhost:5000/api/ussd/test \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/ussd/test \
   -H "Content-Type: application/json" \
   -d '{
     "phoneNumber": "+254712345678",
@@ -137,21 +137,21 @@ curl -X POST http://localhost:5000/api/ussd/test \
 ### 2. Simulation Endpoint
 ```bash
 # Main menu
-curl http://localhost:5000/api/ussd/simulate/+254712345678
+curl https://www.kisumu.codewithseth.co.ke/api/ussd/simulate/+254712345678
 
 # Room status
-curl http://localhost:5000/api/ussd/simulate/+254712345678?text=1
+curl https://www.kisumu.codewithseth.co.ke/api/ussd/simulate/+254712345678?text=1
 
 # Market schedule
-curl http://localhost:5000/api/ussd/simulate/+254712345678?text=2
+curl https://www.kisumu.codewithseth.co.ke/api/ussd/simulate/+254712345678?text=2
 
 # Request release (enter quantity)
-curl http://localhost:5000/api/ussd/simulate/+254712345678?text=5*50
+curl https://www.kisumu.codewithseth.co.ke/api/ussd/simulate/+254712345678?text=5*50
 ```
 
 ### 3. Documentation
 ```bash
-curl http://localhost:5000/api/ussd/docs
+curl https://www.kisumu.codewithseth.co.ke/api/ussd/docs
 ```
 
 ## Phone Number Registration

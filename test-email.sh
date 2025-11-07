@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-API_URL="http://localhost:5000/api"
+API_URL="https://www.kisumu.codewithseth.co.ke/api"
 TEST_EMAIL="test@example.com"
 
 echo -e "${BLUE}Testing backend server...${NC}"

@@ -41,7 +41,7 @@ fi
 if [ ! -f ".env.local" ]; then
     echo ""
     echo "📝 Creating .env.local..."
-    echo "NEXT_PUBLIC_API_URL=http://localhost:5000/api" > .env.local
+    echo "NEXT_PUBLIC_API_URL=https://www.kisumu.codewithseth.co.ke/api" > .env.local
     echo "✅ Created .env.local"
 fi
 
@@ -71,7 +71,7 @@ echo "🎉 Setup complete!"
 echo ""
 echo "🚀 Starting the application..."
 echo "   Frontend: http://localhost:3000"
-echo "   Backend:  http://localhost:5000/api"
+echo "   Backend:  https://www.kisumu.codewithseth.co.ke/api"
 echo ""
 echo "Press Ctrl+C to stop the servers"
 echo ""

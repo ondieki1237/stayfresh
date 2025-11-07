@@ -123,7 +123,7 @@ cd ..
 
 Create `.env.local` in the root directory:
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_URL=https://www.kisumu.codewithseth.co.ke/api
 ```
 
 Create `server/.env`:
@@ -172,7 +172,7 @@ npm run dev:server
 
 6. **Access the application**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:5000/api
+- Backend API: https://www.kisumu.codewithseth.co.ke/api
 
 ## 📊 Database Models
 

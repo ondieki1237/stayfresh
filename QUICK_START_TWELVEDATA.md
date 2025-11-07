@@ -22,7 +22,7 @@ npm run dev
 ### Step 2: Get Your JWT Token
 ```bash
 # Login to get a token (replace with your credentials)
-curl -X POST "http://localhost:5000/api/farmers/login" \
+curl -X POST "https://www.kisumu.codewithseth.co.ke/api/farmers/login" \
   -H "Content-Type: application/json" \
   -d '{"email":"your-email@example.com","password":"your-password"}'
 
@@ -35,11 +35,11 @@ curl -X POST "http://localhost:5000/api/farmers/login" \
 TOKEN="YOUR_TOKEN"
 
 # Get real-time corn price
-curl -X GET "http://localhost:5000/api/market-insights/quote/corn" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn" \
   -H "Authorization: Bearer $TOKEN"
 
 # Get market movers
-curl -X GET "http://localhost:5000/api/market-insights/movers" \
+curl -X GET "https://www.kisumu.codewithseth.co.ke/api/market-insights/movers" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -151,13 +151,13 @@ root/
 ./test-twelvedata.sh
 
 # Or test individual endpoints
-curl http://localhost:5000/api/market-insights/quote/corn \
+curl https://www.kisumu.codewithseth.co.ke/api/market-insights/quote/corn \
   -H "Authorization: Bearer YOUR_TOKEN"
 
-curl http://localhost:5000/api/market-insights/movers \
+curl https://www.kisumu.codewithseth.co.ke/api/market-insights/movers \
   -H "Authorization: Bearer YOUR_TOKEN"
 
-curl http://localhost:5000/api/market-insights/api-status \
+curl https://www.kisumu.codewithseth.co.ke/api/market-insights/api-status \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 

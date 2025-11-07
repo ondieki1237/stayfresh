@@ -322,7 +322,7 @@ npm start
 
 2. **Test Welcome Email:**
 ```bash
-curl -X POST http://localhost:5000/api/farmers/register \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/farmers/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -337,7 +337,7 @@ curl -X POST http://localhost:5000/api/farmers/register \
 3. **Test Produce Sold Email:**
 First create produce, then:
 ```bash
-curl -X POST http://localhost:5000/api/produce/PRODUCE_ID/sell \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/produce/PRODUCE_ID/sell \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -348,7 +348,7 @@ curl -X POST http://localhost:5000/api/produce/PRODUCE_ID/sell \
 
 4. **Test Sensor Alert:**
 ```bash
-curl -X POST http://localhost:5000/api/sensors/SENSOR_ID/reading \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/sensors/SENSOR_ID/reading \
   -H "Content-Type: application/json" \
   -d '{
     "temperature": 8.5,
@@ -360,7 +360,7 @@ curl -X POST http://localhost:5000/api/sensors/SENSOR_ID/reading \
 
 5. **Test Billing Reminder:**
 ```bash
-curl -X POST http://localhost:5000/api/billing/BILLING_ID/remind \
+curl -X POST https://www.kisumu.codewithseth.co.ke/api/billing/BILLING_ID/remind \
   -H "Content-Type: application/json"
 ```
 
