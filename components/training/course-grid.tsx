@@ -14,7 +14,7 @@ export default function CourseGrid() {
       duration: "45 min",
       level: "Beginner",
       lessons: 5,
-      description: "Learn the fundamentals of cold chain management",
+      description: "Learn the fundamentals of Stay Fresh management",
       image: "❄️",
       completed: true,
       progress: 100,

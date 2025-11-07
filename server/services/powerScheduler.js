@@ -1,5 +1,6 @@
-const Room = require("./models/Chama")
-const Chama = require("./models/Chama")
+import mongoose from "mongoose"
+import Chama from "../models/Chama.js"
+import Room from "../models/Room.js"
 
 /**
  * Power Scheduler Service
@@ -79,9 +80,6 @@ function calculatePowerSavings(offTime, onTime) {
  * Toggle room power based on schedule
  */
 async function toggleRoomPower(room, newStatus) {
-  const mongoose = require("mongoose")
-  const Room = mongoose.model("Room")
-  
   const oldStatus = room.powerStatus
   
   if (oldStatus === newStatus) {
@@ -112,9 +110,6 @@ async function toggleRoomPower(room, newStatus) {
  */
 async function processSharedRooms() {
   try {
-    const mongoose = require("mongoose")
-    const Room = mongoose.model("Room")
-    
     // Find all shared rooms with chama assignments
     const sharedRooms = await Room.find({
       roomType: "shared",
@@ -185,9 +180,6 @@ async function processSharedRooms() {
  */
 async function manualPowerToggle(roomId, newStatus) {
   try {
-    const mongoose = require("mongoose")
-    const Room = mongoose.model("Room")
-    
     const room = await Room.findById(roomId)
     
     if (!room) {
@@ -208,10 +200,6 @@ async function manualPowerToggle(roomId, newStatus) {
  */
 async function getChamaPowerStatus(chamaId) {
   try {
-    const mongoose = require("mongoose")
-    const Room = mongoose.model("Room")
-    const Chama = mongoose.model("Chama")
-    
     const chama = await Chama.findById(chamaId).populate("sharedRoom")
     
     if (!chama || !chama.sharedRoom) {
@@ -314,7 +302,7 @@ function startPowerScheduler(intervalMinutes = 5) {
   }, intervalMs)
 }
 
-module.exports = {
+export {
   processSharedRooms,
   manualPowerToggle,
   getChamaPowerStatus,

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose"
 
 const chamaSchema = new mongoose.Schema(
   {
@@ -98,4 +98,4 @@ chamaSchema.pre("save", function (next) {
 
 const Chama = mongoose.model("Chama", chamaSchema)
 
-module.exports = Chama
+export default Chama

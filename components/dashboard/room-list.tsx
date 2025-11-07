@@ -49,7 +49,7 @@ export default function RoomList({ farmerId }: RoomListProps) {
     
     // Check if user is admin (superuser)
     const userEmail = localStorage.getItem("userEmail")
-    setIsAdmin(userEmail === "admin@coldchain.com" || userEmail === "superuser@coldchain.com")
+    setIsAdmin(userEmail === "admin@stayfresh.com" || userEmail === "superuser@stayfresh.com")
     
     fetchRooms()
   }, [farmerId])
@@ -58,7 +58,7 @@ export default function RoomList({ farmerId }: RoomListProps) {
     try {
       const token = localStorage.getItem("token")
       const userEmail = localStorage.getItem("userEmail")
-      const checkIsAdmin = userEmail === "admin@coldchain.com" || userEmail === "superuser@coldchain.com"
+      const checkIsAdmin = userEmail === "admin@stayfresh.com" || userEmail === "superuser@stayfresh.com"
       
       // Admin can see all rooms, regular users see only their rented rooms
       const endpoint = checkIsAdmin 

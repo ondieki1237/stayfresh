@@ -6,8 +6,8 @@ export default function LearningPath() {
   const paths = [
     {
       id: 1,
-      title: "Cold Chain Mastery",
-      description: "Complete guide to becoming a cold chain expert",
+      title: "Stay Fresh Mastery",
+      description: "Complete guide to becoming a Stay Fresh expert",
       duration: "15 hours",
       courses: 8,
       progress: 35,
@@ -44,7 +44,7 @@ export default function LearningPath() {
     {
       id: 3,
       title: "Technology & Innovation",
-      description: "Master modern cold chain technology",
+      description: "Master modern Stay Fresh technology",
       duration: "12 hours",
       courses: 6,
       progress: 0,

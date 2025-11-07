@@ -1,6 +1,6 @@
-# 📡 Cold Chain API Documentation
+# 📡 Stay Fresh API Documentation
 
-Complete API reference for the Cold Chain Management System backend.
+Complete API reference for the Stay Fresh Management System backend.
 
 **Base URL:** `http://localhost:5000/api`
 

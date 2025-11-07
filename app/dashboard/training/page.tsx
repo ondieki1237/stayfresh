@@ -37,7 +37,7 @@ export default function Training() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-foreground text-balance">Training & Learning</h1>
-          <p className="text-muted text-sm mt-1">Improve your cold chain farming skills</p>
+          <p className="text-muted text-sm mt-1">Improve your Stay Fresh farming skills</p>
         </div>
 
         {/* Quick Stats */}

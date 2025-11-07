@@ -9,6 +9,8 @@ import billingRoutes from "./routes/billing.js"
 import sensorRoutes from "./routes/sensors.js"
 import adminRoutes from "./routes/admin.js"
 import marketRoutes from "./routes/market.js"
+import chamaRoutes from "./routes/chamas.js"
+import { startPowerScheduler } from "./services/powerScheduler.js"
 
 dotenv.config()
 
@@ -32,6 +34,7 @@ app.use("/api/billing", billingRoutes)
 app.use("/api/sensors", sensorRoutes)
 app.use("/api/admin", adminRoutes)
 app.use("/api/market", marketRoutes)
+app.use("/api/chamas", chamaRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -41,4 +44,7 @@ app.get("/api/health", (req, res) => {
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+  
+  // Start the power scheduler for automatic room power management
+  startPowerScheduler(5) // Check every 5 minutes
 })

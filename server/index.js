@@ -11,6 +11,8 @@ import adminRoutes from "./routes/admin.js"
 import marketRoutes from "./routes/market.js"
 import marketplaceRoutes from "./routes/marketplace.js"
 import trainingRoutes from "./routes/training.js"
+import chamaRoutes from "./routes/chamas.js"
+import { startPowerScheduler } from "./services/powerScheduler.js"
 
 dotenv.config()
 
@@ -36,6 +38,7 @@ app.use("/api/admin", adminRoutes)
 app.use("/api/market", marketRoutes)
 app.use("/api/marketplace", marketplaceRoutes)
 app.use("/api/training", trainingRoutes)
+app.use("/api/chamas", chamaRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -46,4 +49,7 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`)
   console.log(`🌐 Health check: http://localhost:${PORT}/api/health`)
+  
+  // Start the power scheduler for automatic room power management
+  startPowerScheduler(5) // Check every 5 minutes
 })

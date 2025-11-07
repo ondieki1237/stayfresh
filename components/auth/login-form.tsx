@@ -43,7 +43,7 @@ export default function LoginForm() {
       localStorage.setItem("userEmail", data.farmer.email)
       
       // Check if admin and redirect accordingly
-      const isAdmin = data.farmer.email === "admin@coldchain.com" || data.farmer.email === "superuser@coldchain.com"
+      const isAdmin = data.farmer.email === "admin@stayfresh.com" || data.farmer.email === "superuser@stayfresh.com"
       if (isAdmin) {
         localStorage.setItem("isAdmin", "true")
         router.push("/admin")

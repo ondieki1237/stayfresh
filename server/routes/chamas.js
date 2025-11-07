@@ -1,8 +1,10 @@
-const express = require("express")
+import express from "express"
 const router = express.Router()
-const Chama = require("../models/Chama")
-const Room = require("../models/Room")
-const Farmer = require("../models/Farmer")
+
+// Import models
+import Chama from "../models/Chama.js"
+import Room from "../models/Room.js"
+import Farmer from "../models/Farmer.js"
 
 // Get all chamas
 router.get("/", async (req, res) => {
@@ -423,4 +425,4 @@ router.get("/:id/stats", async (req, res) => {
   }
 })
 
-module.exports = router
+export default router

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Cold Chain Quick Start Script
+# Stay Fresh Quick Start Script
 # This script helps you get started quickly
 
-echo "🥶❄️ Cold Chain Management System - Quick Start"
+echo "🥶❄️ Stay Fresh Management System - Quick Start"
 echo "=============================================="
 echo ""
 

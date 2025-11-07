@@ -1,6 +1,6 @@
-# 🚀 Cold Chain Setup Guide
+# 🚀 Stay Fresh Setup Guide
 
-Complete step-by-step guide to set up and run the Cold Chain Management System.
+Complete step-by-step guide to set up and run the Stay Fresh Management System.
 
 ## 📋 Prerequisites
 

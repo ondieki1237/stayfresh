@@ -19,7 +19,7 @@ NODE_ENV=development
 # Email Configuration
 EMAIL_USER=bellarinseth@gmail.com
 EMAIL_PASS=kept qqvc demi yfxc
-EMAIL_FROM=Cold Chain System <bellarinseth@gmail.com>
+EMAIL_FROM=Stay Fresh System <bellarinseth@gmail.com>
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -247,7 +247,7 @@ const transporter = nodemailer.createTransport({
 ### Email Structure
 ```javascript
 const mailOptions = {
-  from: process.env.EMAIL_FROM,        // Cold Chain System <...>
+  from: process.env.EMAIL_FROM,        // Stay Fresh System <...>
   to: recipient.email,
   subject: "Email Subject",
   html: htmlTemplate,                  // Professional HTML
@@ -347,7 +347,7 @@ transporter.verify((error, success) => {
 |----------|-------|---------|
 | `EMAIL_USER` | bellarinseth@gmail.com | Gmail account |
 | `EMAIL_PASS` | kept qqvc demi yfxc | Gmail App Password |
-| `EMAIL_FROM` | Cold Chain System <...> | Sender name |
+| `EMAIL_FROM` | Stay Fresh System <...> | Sender name |
 | `FRONTEND_URL` | http://localhost:3000 | Link base URL |
 | `MONGODB_URI` | mongodb+srv://... | Atlas connection |
 | `JWT_SECRET` | coldchain_secret... | Auth token secret |
@@ -507,7 +507,7 @@ Connected to MongoDB
 
 ## 🎉 Implementation Complete!
 
-The Cold Chain Management System now has a **fully functional email notification system** with:
+The Stay Fresh Management System now has a **fully functional email notification system** with:
 - ✅ 6 email types
 - ✅ Professional HTML templates
 - ✅ MongoDB Atlas integration
@@ -520,5 +520,5 @@ The Cold Chain Management System now has a **fully functional email notification
 ---
 
 **Last Updated:** 2024  
-**Implementation by:** Cold Chain Development Team  
+**Implementation by:** Stay Fresh Development Team  
 **Email Service:** Nodemailer v6.9.7 with Gmail SMTP

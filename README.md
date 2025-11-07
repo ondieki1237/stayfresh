@@ -1,4 +1,4 @@
-# 🥶❄️ Cold Chain Management System
+# 🥶❄️ Stay Fresh Management System
 
 A comprehensive full-stack cold storage management platform designed for farmers to rent cold storage facilities, monitor produce, track market prices, and connect with buyers.
 
@@ -136,7 +136,7 @@ NODE_ENV=development
 # Email Configuration (Gmail)
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_gmail_app_password
-EMAIL_FROM=Cold Chain System <your_email@gmail.com>
+EMAIL_FROM=Stay Fresh System <your_email@gmail.com>
 FRONTEND_URL=http://localhost:3000
 ```
 

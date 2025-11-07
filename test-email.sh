@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Cold Chain Email System Test Script
+# Stay Fresh Email System Test Script
 
-echo "🧪 Cold Chain Email System - Test Suite"
+echo "🧪 Stay Fresh Email System - Test Suite"
 echo "========================================"
 echo ""
 
@@ -89,7 +89,7 @@ echo "-------------------------------------------"
 echo "Check your server/.env file:"
 echo "  EMAIL_USER=bellarinseth@gmail.com"
 echo "  EMAIL_PASS=kept qqvc demi yfxc"
-echo "  EMAIL_FROM=Cold Chain System <bellarinseth@gmail.com>"
+echo "  EMAIL_FROM=Stay Fresh System <bellarinseth@gmail.com>"
 echo ""
 
 echo -e "${BLUE}5. Where to Check Emails${NC}"
