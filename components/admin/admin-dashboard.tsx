@@ -98,7 +98,7 @@ export default function AdminDashboard({ stats }: AdminDashboardProps) {
     },
     {
       title: "Revenue (Paid)",
-      value: `$${(systemStats.totalRevenue || 0).toFixed(0)}`,
+  value: `KSH ${(systemStats.totalRevenue || 0).toFixed(0)}`,
       icon: "💰",
       gradient: "from-chart-4 to-chart-4/70",
       bgGradient: "from-chart-4/20 to-chart-4/5",

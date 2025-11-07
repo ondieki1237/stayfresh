@@ -136,10 +136,10 @@ Complete admin interface for managing abandonment requests:
 | 6 months | 15%      | Long-term planning       |
 | 12 months| 20%      | Annual commitment        |
 
-**Example**: Room at $100/month
-- 1 month: $100
-- 3 months: $270 (save $30)
-- 12 months: $960 (save $240)
+**Example**: Room at KSH 100/month
+- 1 month: KSH 100
+- 3 months: KSH 270 (save KSH 30)
+- 12 months: KSH 960 (save KSH 240)
 
 ## Database Schema Changes
 
@@ -257,7 +257,7 @@ Headers: { Authorization: "Bearer <token>" }
 
 ## Notes
 
-- All monetary values in USD
+- All monetary values in KSH
 - Dates use ISO 8601 format
 - Authorization required for all endpoints
 - Admin role checked server-side

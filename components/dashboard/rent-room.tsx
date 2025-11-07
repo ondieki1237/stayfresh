@@ -109,7 +109,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`✅ Room ${selectedRoom.roomNumber} rented successfully!\n\nBilling details:\n- Cycle: ${billingCycle}\n- Amount: $${data.billing?.totalAmount || "N/A"}\n- Due Date: ${new Date(data.billing?.dueDate).toLocaleDateString() || "N/A"}`)
+  alert(`✅ Room ${selectedRoom.roomNumber} rented successfully!\n\nBilling details:\n- Cycle: ${billingCycle}\n- Amount: KSH ${data.billing?.totalAmount || "N/A"}\n- Due Date: ${new Date(data.billing?.dueDate).toLocaleDateString() || "N/A"}`)
         setShowRentDialog(false)
         setSelectedRoom(null)
         fetchAvailableRooms()

@@ -328,7 +328,7 @@ export default function ChamaManagement() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="monthlyFee">Monthly Fee (KES)</Label>
+                  <Label htmlFor="monthlyFee">Monthly Fee (KSH)</Label>
                   <Input
                     id="monthlyFee"
                     name="monthlyFee"
@@ -526,7 +526,7 @@ export default function ChamaManagement() {
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t">
-                <span className="text-sm font-medium">KES {chama.monthlyFee.toLocaleString()}/month</span>
+                <span className="text-sm font-medium">KSH {chama.monthlyFee.toLocaleString()}/month</span>
                 <div className="flex gap-1">
                   <Button size="icon" variant="outline" onClick={() => openEditDialog(chama)}>
                     <Edit className="w-4 h-4" />

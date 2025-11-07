@@ -274,6 +274,34 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
     router.push(`/dashboard/rooms/${roomId}`)
   }
 
+  const downloadReceipt = async (stockingId: string) => {
+    try {
+      const token = localStorage.getItem("token")
+      const resp = await fetch(`${API_BASE || "/api"}/stocking/${stockingId}/receipt`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => null)
+        alert(`Failed to download receipt: ${err?.message || resp.statusText}`)
+        return
+      }
+
+      const blob = await resp.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `stocking-${stockingId}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Download receipt error:", error)
+      alert("Error downloading receipt")
+    }
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center py-12">
       <div className="text-center space-y-3">
@@ -419,14 +447,14 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Current Price</p>
                                 <p className="text-lg font-bold text-primary">
-                                  KES { Number(produce.currentPrice || 0).toFixed(2) }
+                                  KSH { Number(produce.currentPrice || 0).toFixed(2) }
                                   /kg
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Market Price</p>
                                 <p className="text-lg font-bold text-chart-4">
-                                  KES { Number(produce.marketPrice || 0).toFixed(2) }
+                                  KSH { Number(produce.marketPrice || 0).toFixed(2) }
                                   /kg
                                 </p>
                               </div>
@@ -469,13 +497,13 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Current</p>
                                 <p className="text-sm font-bold text-primary">
-                                  KES {stocking.currentMarketPrice.toFixed(2)}
+                                  KSH {stocking.currentMarketPrice.toFixed(2)}
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Target</p>
                                 <p className="text-sm font-bold text-chart-4">
-                                  KES {stocking.targetPrice.toFixed(2)}
+                                  KSH {stocking.targetPrice.toFixed(2)}
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
@@ -511,6 +539,16 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                                 )}
                               </div>
                             </div>
+                            <div className="flex justify-end mt-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => downloadReceipt(stocking._id)}
+                              >
+                                <span className="mr-1">📄</span>
+                                Download Receipt
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -530,7 +568,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Amount Due</span>
-                          <span className="font-bold text-chart-4">KES { Number(roomBilling.amountDue || 0).toFixed(2) }</span>
+                          <span className="font-bold text-chart-4">KSH { Number(roomBilling.amountDue || 0).toFixed(2) }</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Status</span>

@@ -104,7 +104,7 @@ export default function BookStocking({
 
       if (response.ok) {
         const data = await response.json()
-  alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches KES ${parseFloat(targetPrice).toFixed(2)}/kg`)
+  alert(`✅ ${data.message}\n\nYou'll receive an email when the market price reaches KSH ${parseFloat(targetPrice).toFixed(2)}/kg`)
         
         // Reset form
         setProduceType("")
@@ -221,7 +221,7 @@ export default function BookStocking({
           {/* Estimated Value */}
           <div className="space-y-2">
             <Label htmlFor="estimatedValue">
-              Initial Investment/Value (KES) <span className="text-destructive">*</span>
+              Initial Investment/Value (KSH) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="estimatedValue"
@@ -234,7 +234,7 @@ export default function BookStocking({
             />
             {quantity && estimatedValue && (
                 <p className="text-xs text-muted-foreground">
-                Cost per kg: <strong>KES {pricePerKg()}</strong>
+                Cost per kg: <strong>KSH {pricePerKg()}</strong>
               </p>
             )}
           </div>
@@ -262,7 +262,7 @@ export default function BookStocking({
           {/* Target Price */}
           <div className="space-y-2">
             <Label htmlFor="targetPrice">
-              Target Selling Price (KES/kg) <span className="text-destructive">*</span>
+              Target Selling Price (KSH/kg) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="targetPrice"
@@ -285,16 +285,16 @@ export default function BookStocking({
                 <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Initial Investment</span>
-                  <span className="font-semibold">KES {parseFloat(estimatedValue).toFixed(2)}</span>
+                  <span className="font-semibold">KSH {parseFloat(estimatedValue).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Target Value</span>
-                  <span className="font-semibold text-primary">KES {calculatePotentialEarnings()}</span>
+                  <span className="font-semibold text-primary">KSH {calculatePotentialEarnings()}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between">
                   <span className="text-muted-foreground font-medium">Expected Profit</span>
                   <span className="font-bold text-chart-4 text-lg">
-                    KES {calculateProfit()}
+                    KSH {calculateProfit()}
                     {estimatedValue !== "0" && (
                       <span className="text-xs ml-1">
                         ({(((parseFloat(calculateProfit())) / parseFloat(estimatedValue)) * 100).toFixed(1)}%)

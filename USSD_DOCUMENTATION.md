@@ -184,7 +184,7 @@ The system normalizes phone numbers to handle various formats:
 ### Success Messages
 - ✅ Clear and concise information
 - 📊 Visual indicators (emojis for better UX)
-- 💰 Monetary values formatted with KES
+- 💰 Monetary values formatted with KSH
 - 📅 Dates in readable format
 
 ### Error Messages

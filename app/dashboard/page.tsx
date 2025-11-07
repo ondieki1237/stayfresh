@@ -107,7 +107,7 @@ export default function Dashboard() {
             <p className="text-xs text-muted-foreground">Produce Items</p>
           </div>
           <div className="bg-card border border-border rounded-2xl p-4 text-center shadow-sm">
-            <p className="text-3xl font-bold text-foreground mb-1">$0</p>
+            <p className="text-3xl font-bold text-foreground mb-1">KSH 0</p>
             <p className="text-xs text-muted-foreground">This Month</p>
           </div>
         </div>
