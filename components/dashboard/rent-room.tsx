@@ -61,7 +61,8 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
   const fetchAvailableRooms = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/rooms/available`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${API_BASE}/rooms/available`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -90,8 +91,9 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
       const endDate = new Date()
       endDate.setMonth(endDate.getMonth() + cycleMonths)
 
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
       const response = await fetch(
-        `https://www.kisumu.codewithseth.co.ke/api/rooms/${selectedRoom._id}/rent`,
+        `${API_BASE}/rooms/${selectedRoom._id}/rent`,
         {
           method: "POST",
           headers: {
@@ -189,7 +191,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
                 </div>
 
                 <div className="text-2xl font-bold text-foreground mt-3">
-                  ${room.rentalRate}
+                  KSH {room.rentalRate}
                   <span className="text-sm font-normal text-muted-foreground">/month</span>
                 </div>
               </div>
@@ -259,7 +261,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
                   </div>
                   <div>
                     <p className="text-muted-foreground">Monthly Rate</p>
-                    <p className="font-semibold">${selectedRoom.rentalRate}</p>
+                    <p className="font-semibold">KSH {selectedRoom.rentalRate}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Temperature</p>
@@ -303,8 +305,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Base Amount</span>
                     <span className="font-semibold">
-                      $
-                      {selectedRoom.rentalRate *
+                      KSH {selectedRoom.rentalRate *
                         parseInt(billingCycle.replace("month", "").replace("s", ""))}
                     </span>
                   </div>
@@ -315,8 +316,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
                         {BILLING_CYCLES.find((c) => c.value === billingCycle)?.discount}%)
                       </span>
                       <span>
-                        -$
-                        {(
+                        -KSH {(
                           (selectedRoom.rentalRate *
                             parseInt(billingCycle.replace("month", "").replace("s", "")) *
                             BILLING_CYCLES.find((c) => c.value === billingCycle)!.discount) /
@@ -327,7 +327,7 @@ export default function RentRoom({ farmerId, onRoomRented }: RentRoomProps) {
                   )}
                   <div className="border-t pt-2 flex justify-between text-lg font-bold">
                     <span>Total Amount</span>
-                    <span className="text-primary">${calculateTotal().toFixed(2)}</span>
+                    <span className="text-primary">KSH {calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
               </Card>

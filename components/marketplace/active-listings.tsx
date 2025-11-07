@@ -43,49 +43,61 @@ export default function ActiveListings({ farmerId }: ActiveListingsProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-foreground">Your Active Listings</h2>
-        <Button className="bg-primary hover:bg-primary-dark text-white">Create New</Button>
+        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <span className="text-green-600">📋</span>
+          Your Active Listings
+        </h2>
+        <Button className="bg-gradient-to-r from-yellow-400 to-green-500 hover:from-yellow-500 hover:to-green-600 text-white shadow-md">
+          Create New
+        </Button>
       </div>
 
       {listings.length === 0 ? (
-        <div className="bg-[#1a1f26] border border-dashed border-border rounded-lg p-8 text-center">
-          <p className="text-muted mb-4">No active listings yet</p>
-          <Button className="bg-primary hover:bg-primary-dark text-white">Create First Listing</Button>
+        <div className="bg-white border-2 border-dashed border-yellow-300 rounded-lg p-8 text-center">
+          <div className="text-6xl mb-4">📦</div>
+          <p className="text-gray-600 mb-4">No active listings yet</p>
+          <Button className="bg-gradient-to-r from-yellow-400 to-green-500 hover:from-yellow-500 hover:to-green-600 text-white shadow-md">
+            Create First Listing
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
           {listings.map((listing) => (
-            <div key={listing.id} className="bg-[#1a1f26] border border-border rounded-lg p-4">
+            <div key={listing.id} className="bg-white border-2 border-yellow-200 rounded-lg p-4 hover:border-green-300 hover:shadow-lg transition-all">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex items-start gap-4 flex-1">
-                  <span className="text-4xl">{listing.image}</span>
+                  <div className="w-14 h-14 bg-gradient-to-br from-yellow-100 to-green-100 rounded-lg flex items-center justify-center text-3xl">
+                    {listing.image}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-lg font-bold text-foreground">{listing.produce}</h3>
-                      <span className="px-2 py-1 bg-success/20 text-success rounded text-xs font-medium">
+                      <h3 className="text-lg font-bold text-gray-800">{listing.produce}</h3>
+                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-300">
                         {listing.status}
                       </span>
                     </div>
-                    <p className="text-muted text-sm mb-2">
-                      {listing.quantity}kg @ ${listing.pricePerKg}/kg = ${listing.totalValue.toLocaleString()}
+                    <p className="text-gray-700 text-sm mb-2 font-semibold">
+                      {listing.quantity}kg @ KSH {listing.pricePerKg}/kg = KSH {listing.totalValue.toLocaleString()}
                     </p>
-                    <div className="flex gap-4 text-muted text-xs">
-                      <span>👁️ {listing.views} views</span>
-                      <span>💬 {listing.interests} interests</span>
-                      <span>✓ {listing.sold}kg sold</span>
+                    <div className="flex gap-4 text-gray-600 text-xs bg-gradient-to-r from-yellow-50 to-green-50 p-2 rounded border border-yellow-200">
+                      <span className="flex items-center gap-1">👁️ {listing.views} views</span>
+                      <span className="flex items-center gap-1">💬 {listing.interests} interests</span>
+                      <span className="flex items-center gap-1">✓ {listing.sold}kg sold</span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-foreground text-sm mb-3">{listing.createdAt}</p>
+                  <p className="text-gray-600 text-sm mb-3">{listing.createdAt}</p>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
-                      className="border-border text-foreground hover:bg-[#252b33] text-xs bg-transparent"
+                      className="border-2 border-yellow-400 text-gray-700 hover:bg-yellow-50 text-xs"
                     >
                       Edit
                     </Button>
-                    <Button className="bg-primary hover:bg-primary-dark text-white text-xs">View Inquiries</Button>
+                    <Button className="bg-gradient-to-r from-yellow-400 to-green-500 hover:from-yellow-500 hover:to-green-600 text-white text-xs shadow-md">
+                      View Inquiries
+                    </Button>
                   </div>
                 </div>
               </div>

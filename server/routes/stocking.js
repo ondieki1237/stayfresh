@@ -283,57 +283,276 @@ router.get("/:id/receipt", authMiddleware, async (req, res) => {
 
     if (!stocking) return res.status(404).json({ message: "Stocking not found" })
 
-    // Create PDF document and stream to response
-    const doc = new PDFDocument({ size: "A4", margin: 50 })
+    // Create PDF document with better styling
+    const doc = new PDFDocument({ 
+      size: "A4", 
+      margin: 50,
+      bufferPages: true 
+    })
 
     res.setHeader("Content-Type", "application/pdf")
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=stocking-${stocking._id}.pdf`
+      `attachment; filename=StayFresh-Receipt-${stocking._id}.pdf`
     )
 
     doc.pipe(res)
 
-    // Header
-    doc.fontSize(20).text("Stay Fresh - Stocking Receipt", { align: "center" })
-    doc.moveDown()
+    // Colors
+    const brandYellow = '#FBBF24'
+    const brandGreen = '#10B981'
+    const darkGray = '#374151'
+    const lightGray = '#F3F4F6'
 
-    // Basic info
-    doc.fontSize(12)
-      .text(`Receipt ID: ${stocking._id}`)
-      .text(`Date: ${new Date(stocking.stockedAt).toLocaleString()}`)
-      .moveDown()
-
-    // Farmer and room
-    doc.fontSize(14).text("Farmer & Room", { underline: true })
-    doc.moveDown(0.4)
-    doc.fontSize(12)
-      .text(`Name: ${stocking.farmer?.firstName || ""} ${stocking.farmer?.lastName || ""}`)
-      .text(`Email: ${stocking.farmer?.email || "N/A"}`)
-      .text(`Phone: ${stocking.farmer?.phone || "N/A"}`)
-      .text(`Room: ${stocking.room?.roomNumber || "N/A"}`)
-      .moveDown()
-
-    // Stocking details
-    doc.fontSize(14).text("Stocking Details", { underline: true })
-    doc.moveDown(0.4)
-    doc.fontSize(12)
-      .text(`Produce: ${stocking.produceType}`)
-      .text(`Quantity: ${stocking.quantity} kg`)
-      .text(`Condition: ${stocking.condition || "N/A"}`)
-      .text(`Current Market Price (per kg): KSH ${Number(stocking.currentMarketPrice || 0).toFixed(2)}`)
-      .text(`Target Price (per kg): KSH ${Number(stocking.targetPrice || 0).toFixed(2)}`)
-      .text(`Estimated Value: KSH ${Number(stocking.estimatedValue || 0).toFixed(2)}`)
-      .moveDown()
-
-    if (stocking.notes) {
-      doc.fontSize(12).text("Notes:")
-      doc.fontSize(11).text(stocking.notes)
-      doc.moveDown()
+    // Helper function to draw a colored box
+    const drawBox = (x, y, width, height, color) => {
+      doc.rect(x, y, width, height).fill(color)
     }
 
-    doc.moveDown(2)
-    doc.fontSize(10).text("Thank you for using Stay Fresh Management System.")
+    // Header with gradient effect (simulated with rectangles)
+    const headerHeight = 80
+    drawBox(0, 0, doc.page.width, headerHeight, brandGreen)
+    
+    // Company name in header
+    doc.fillColor('#FFFFFF')
+       .fontSize(28)
+       .font('Helvetica-Bold')
+       .text('STAY FRESH', 50, 25, { align: 'left' })
+    
+    doc.fillColor('#FFFFFF')
+       .fontSize(11)
+       .font('Helvetica')
+       .text('Cold Storage Management System', 50, 55)
+
+    // Receipt title badge
+    doc.fillColor(brandYellow)
+       .fontSize(24)
+       .font('Helvetica-Bold')
+       .text('RECEIPT', doc.page.width - 200, 30, { align: 'right', width: 150 })
+
+    // Reset position after header
+    doc.fillColor(darkGray)
+    let currentY = headerHeight + 30
+
+    // Receipt information box
+    doc.fontSize(10)
+       .font('Helvetica')
+       .fillColor('#6B7280')
+       .text('Receipt No:', 50, currentY)
+       .fillColor(darkGray)
+       .font('Helvetica-Bold')
+       .text(stocking._id.toString().substring(0, 16).toUpperCase(), 150, currentY)
+
+    currentY += 20
+    doc.font('Helvetica')
+       .fillColor('#6B7280')
+       .text('Date Issued:', 50, currentY)
+       .fillColor(darkGray)
+       .font('Helvetica-Bold')
+       .text(new Date().toLocaleDateString('en-KE', { 
+         year: 'numeric', 
+         month: 'long', 
+         day: 'numeric',
+         hour: '2-digit',
+         minute: '2-digit'
+       }), 150, currentY)
+
+    currentY += 20
+    doc.font('Helvetica')
+       .fillColor('#6B7280')
+       .text('Stocking Date:', 50, currentY)
+       .fillColor(darkGray)
+       .font('Helvetica-Bold')
+       .text(new Date(stocking.stockedAt).toLocaleDateString('en-KE', { 
+         year: 'numeric', 
+         month: 'long', 
+         day: 'numeric' 
+       }), 150, currentY)
+
+    currentY += 35
+
+    // Farmer details section with background
+    drawBox(50, currentY, doc.page.width - 100, 110, lightGray)
+    currentY += 15
+
+    doc.fontSize(14)
+       .font('Helvetica-Bold')
+       .fillColor(brandGreen)
+       .text('FARMER INFORMATION', 60, currentY)
+
+    currentY += 25
+    doc.fontSize(11)
+       .font('Helvetica-Bold')
+       .fillColor(darkGray)
+       .text(`${stocking.farmer?.firstName || ""} ${stocking.farmer?.lastName || ""}`, 60, currentY)
+
+    currentY += 18
+    doc.fontSize(10)
+       .font('Helvetica')
+       .fillColor('#6B7280')
+       .text('📧', 60, currentY)
+       .fillColor(darkGray)
+       .text(stocking.farmer?.email || "N/A", 80, currentY)
+
+    currentY += 18
+    doc.fillColor('#6B7280')
+       .text('📱', 60, currentY)
+       .fillColor(darkGray)
+       .text(stocking.farmer?.phone || "N/A", 80, currentY)
+
+    currentY += 18
+    doc.fillColor('#6B7280')
+       .text('🏠', 60, currentY)
+       .fillColor(darkGray)
+       .text(`Room ${stocking.room?.roomNumber || "N/A"} (Capacity: ${stocking.room?.capacity || 0}kg)`, 80, currentY)
+
+    currentY += 35
+
+    // Divider line
+    doc.moveTo(50, currentY)
+       .lineTo(doc.page.width - 50, currentY)
+       .strokeColor(brandYellow)
+       .lineWidth(2)
+       .stroke()
+
+    currentY += 25
+
+    // Stocking details header
+    doc.fontSize(14)
+       .font('Helvetica-Bold')
+       .fillColor(brandGreen)
+       .text('STOCKING DETAILS', 50, currentY)
+
+    currentY += 30
+
+    // Table header
+    const tableTop = currentY
+    const col1 = 50
+    const col2 = 250
+    const col3 = 420
+
+    // Table header background
+    drawBox(col1, tableTop, doc.page.width - 100, 25, brandGreen)
+
+    doc.fontSize(10)
+       .font('Helvetica-Bold')
+       .fillColor('#FFFFFF')
+       .text('ITEM', col1 + 10, tableTop + 8)
+       .text('DETAILS', col2 + 10, tableTop + 8)
+       .text('AMOUNT', col3 + 10, tableTop + 8)
+
+    currentY = tableTop + 35
+
+    // Table rows
+    const addTableRow = (label, value, amount = null, isHighlight = false) => {
+      if (isHighlight) {
+        drawBox(col1, currentY - 5, doc.page.width - 100, 25, lightGray)
+      }
+
+      doc.fontSize(10)
+         .font('Helvetica-Bold')
+         .fillColor(darkGray)
+         .text(label, col1 + 10, currentY)
+         .font('Helvetica')
+         .text(value, col2 + 10, currentY)
+
+      if (amount !== null) {
+        doc.font('Helvetica-Bold')
+           .fillColor(brandGreen)
+           .text(amount, col3 + 10, currentY)
+      }
+
+      currentY += 25
+    }
+
+    addTableRow('Produce Type', stocking.produceType.toUpperCase())
+    addTableRow('Quantity', `${stocking.quantity} kg`, null, true)
+    addTableRow('Condition', (stocking.condition || "Good").toUpperCase())
+    addTableRow('Status', stocking.status.toUpperCase(), null, true)
+
+    currentY += 10
+
+    // Pricing section with highlight
+    drawBox(col1, currentY - 5, doc.page.width - 100, 25, '#FEF3C7')
+    doc.fontSize(10)
+       .font('Helvetica')
+       .fillColor(darkGray)
+       .text('Current Market Price (per kg)', col1 + 10, currentY)
+       .font('Helvetica-Bold')
+       .fillColor(brandGreen)
+       .text(`KSH ${Number(stocking.currentMarketPrice || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, col3 + 10, currentY)
+
+    currentY += 30
+
+    doc.fontSize(10)
+       .font('Helvetica')
+       .fillColor(darkGray)
+       .text('Target Price (per kg)', col1 + 10, currentY)
+       .font('Helvetica-Bold')
+       .fillColor(brandYellow)
+       .text(`KSH ${Number(stocking.targetPrice || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, col3 + 10, currentY)
+
+    currentY += 35
+
+    // Total value box
+    drawBox(col1, currentY - 5, doc.page.width - 100, 35, brandGreen)
+    doc.fontSize(12)
+       .font('Helvetica-Bold')
+       .fillColor('#FFFFFF')
+       .text('ESTIMATED TOTAL VALUE', col1 + 10, currentY + 8)
+       .fontSize(16)
+       .text(`KSH ${Number(stocking.estimatedValue || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, col3 + 10, currentY + 8)
+
+    currentY += 50
+
+    // Notes section if available
+    if (stocking.notes) {
+      currentY += 10
+      drawBox(50, currentY, doc.page.width - 100, 80, lightGray)
+      currentY += 15
+
+      doc.fontSize(11)
+         .font('Helvetica-Bold')
+         .fillColor(brandGreen)
+         .text('ADDITIONAL NOTES', 60, currentY)
+
+      currentY += 20
+      doc.fontSize(9)
+         .font('Helvetica')
+         .fillColor(darkGray)
+         .text(stocking.notes, 60, currentY, { 
+           width: doc.page.width - 120,
+           align: 'left'
+         })
+
+      currentY += 65
+    }
+
+    // Footer
+    const footerY = doc.page.height - 80
+    
+    // Footer line
+    doc.moveTo(50, footerY)
+       .lineTo(doc.page.width - 50, footerY)
+       .strokeColor('#E5E7EB')
+       .lineWidth(1)
+       .stroke()
+
+    doc.fontSize(9)
+       .font('Helvetica')
+       .fillColor('#6B7280')
+       .text('Stay Fresh Cold Storage Management System', 50, footerY + 15, { align: 'center' })
+       .text('📧 info@stayfresh.co.ke  |  📱 +254 700 000 000  |  🌐 www.stayfresh.co.ke', 50, footerY + 30, { align: 'center' })
+
+    // Watermark
+    doc.fontSize(60)
+       .font('Helvetica-Bold')
+       .fillColor('#F3F4F6')
+       .opacity(0.1)
+       .text('STAY FRESH', 0, doc.page.height / 2 - 30, {
+         align: 'center',
+         width: doc.page.width
+       })
 
     doc.end()
   } catch (error) {

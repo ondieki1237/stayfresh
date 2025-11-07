@@ -32,7 +32,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     setError("")
 
     try {
-      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/farmers/register", {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${API_BASE}/farmers/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

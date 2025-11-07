@@ -41,7 +41,8 @@ export default function Dashboard() {
 
   const fetchFarmerData = async (farmerId: string) => {
     try {
-      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${API_BASE}/farmers/profile/${farmerId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       const data = await response.json()

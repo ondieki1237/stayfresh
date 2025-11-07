@@ -65,7 +65,7 @@ export default function DashboardLayout({ children, farmer }: DashboardLayoutPro
             { icon: "📈", label: "Market Insights", href: "/dashboard/market" },
             { icon: "🛒", label: "Marketplace", href: "/dashboard/marketplace" },
             { icon: "📚", label: "Training", href: "/dashboard/training" },
-            { icon: "⚙️", label: "Settings", href: "/dashboard/settings" },
+            { icon: "👤", label: "My Profile", href: "/dashboard/profile" },
           ].map((item) => {
             const isActive = pathname === item.href
             return (

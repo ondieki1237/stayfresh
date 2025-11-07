@@ -85,7 +85,7 @@ export default function CourseGrid() {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
+      {/* Filters with Brand Colors */}
       <div className="flex gap-2 flex-wrap">
         {["all", "beginner", "intermediate", "advanced"].map((cat) => (
           <button
@@ -93,8 +93,8 @@ export default function CourseGrid() {
             onClick={() => setFilter(cat)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors capitalize ${
               filter === cat
-                ? "bg-primary text-white"
-                : "bg-[#1a1f26] border border-border text-foreground hover:border-primary"
+                ? "bg-gradient-to-r from-yellow-400 to-green-500 text-white shadow-md"
+                : "bg-white border-2 border-yellow-300 text-gray-700 hover:border-green-400 hover:text-green-600"
             }`}
           >
             {cat}
@@ -107,12 +107,16 @@ export default function CourseGrid() {
         {filteredCourses.map((course) => (
           <div
             key={course.id}
-            className={`bg-[#1a1f26] border rounded-lg overflow-hidden hover:border-primary transition-all ${
-              course.completed ? "border-success/50" : "border-border"
+            className={`bg-white border-2 rounded-lg overflow-hidden hover:shadow-xl transition-all ${
+              course.completed ? "border-green-400 shadow-lg" : "border-yellow-200 hover:border-green-300"
             }`}
           >
-            {/* Course Header */}
-            <div className="bg-[#252b33] p-4 text-center">
+            {/* Course Header with Brand Gradient */}
+            <div className={`p-4 text-center ${
+              course.completed 
+                ? "bg-gradient-to-r from-green-400 to-green-500" 
+                : "bg-gradient-to-r from-yellow-100 to-green-100"
+            }`}>
               <span className="text-4xl">{course.image}</span>
             </div>
 
@@ -120,40 +124,53 @@ export default function CourseGrid() {
             <div className="p-4 space-y-3">
               <div>
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-bold text-foreground flex-1">{course.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-800 flex-1">{course.title}</h3>
                   {course.completed && (
-                    <span className="text-xs bg-success/20 text-success rounded px-2 py-1">✓ Done</span>
+                    <span className="text-xs bg-green-100 text-green-700 rounded px-2 py-1 font-semibold border border-green-300">
+                      ✓ Done
+                    </span>
                   )}
                 </div>
-                <p className="text-muted text-sm mb-2">{course.description}</p>
+                <p className="text-gray-600 text-sm mb-2">{course.description}</p>
               </div>
 
               {/* Metadata */}
-              <div className="flex items-center gap-4 text-xs text-muted">
+              <div className="flex items-center gap-4 text-xs text-gray-600">
                 <span>⏱️ {course.duration}</span>
                 <span>📖 {course.lessons} lessons</span>
-                <span className="px-2 py-1 bg-[#252b33] rounded">{course.level}</span>
+                <span className={`px-2 py-1 rounded font-medium ${
+                  course.level === "Beginner" 
+                    ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                    : course.level === "Intermediate"
+                    ? "bg-green-100 text-green-700 border border-green-300"
+                    : "bg-blue-100 text-blue-700 border border-blue-300"
+                }`}>
+                  {course.level}
+                </span>
               </div>
 
-              {/* Progress Bar */}
+              {/* Progress Bar with Brand Colors */}
               {course.progress > 0 && (
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted">Progress</span>
-                    <span className="text-primary font-medium">{course.progress}%</span>
+                    <span className="text-gray-600">Progress</span>
+                    <span className="text-green-600 font-bold">{course.progress}%</span>
                   </div>
-                  <div className="w-full bg-[#252b33] rounded-full h-2 overflow-hidden">
-                    <div className="bg-primary h-full transition-all" style={{ width: `${course.progress}%` }}></div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-yellow-400 to-green-500 h-full transition-all" 
+                      style={{ width: `${course.progress}%` }}
+                    ></div>
                   </div>
                 </div>
               )}
 
-              {/* Button */}
+              {/* Button with Brand Colors */}
               <Button
                 className={`w-full ${
                   course.completed
-                    ? "bg-[#252b33] text-foreground hover:bg-[#2a2f36]"
-                    : "bg-primary hover:bg-primary-dark text-white"
+                    ? "bg-white border-2 border-green-500 text-green-600 hover:bg-green-50"
+                    : "bg-gradient-to-r from-yellow-400 to-green-500 hover:from-yellow-500 hover:to-green-600 text-white shadow-md"
                 }`}
               >
                 {course.completed ? "Review" : course.progress > 0 ? "Continue" : "Start"}

@@ -68,20 +68,20 @@ export default function BuyerBrowser() {
 
   return (
     <div className="space-y-4">
-      {/* Search & Filters */}
+      {/* Search & Filters with Brand Colors */}
       <div className="flex gap-4 flex-wrap">
         <input
           type="text"
-          placeholder="Search by produce type..."
-          className="flex-1 min-w-[250px] bg-[#1a1f26] border border-border text-foreground rounded-lg px-4 py-2"
+          placeholder="🔍 Search by produce type..."
+          className="flex-1 min-w-[250px] bg-white border-2 border-yellow-300 text-gray-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder:text-gray-500"
         />
-        <select className="bg-[#1a1f26] border border-border text-foreground rounded-lg px-4 py-2">
+        <select className="bg-white border-2 border-yellow-300 text-gray-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
           <option>All Conditions</option>
           <option>Fresh</option>
           <option>Excellent</option>
           <option>Good</option>
         </select>
-        <select className="bg-[#1a1f26] border border-border text-foreground rounded-lg px-4 py-2">
+        <select className="bg-white border-2 border-yellow-300 text-gray-800 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
           <option>Any Region</option>
           <option>North</option>
           <option>South</option>
@@ -91,58 +91,64 @@ export default function BuyerBrowser() {
         </select>
       </div>
 
-      {/* Listings Grid */}
+      {/* Listings Grid with Brand Colors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {listings.map((listing) => (
           <div
             key={listing.id}
-            className="bg-[#1a1f26] border border-border rounded-lg overflow-hidden hover:border-primary transition-colors"
+            className="bg-white border-2 border-yellow-200 rounded-lg overflow-hidden hover:border-green-400 hover:shadow-xl transition-all"
           >
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-4xl">{listing.image}</span>
+                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-green-100 rounded-full flex items-center justify-center text-3xl">
+                    {listing.image}
+                  </div>
                   <div>
-                    <h3 className="text-lg font-bold text-foreground">{listing.produce}</h3>
-                    <p className="text-muted text-xs">{listing.location}</p>
+                    <h3 className="text-lg font-bold text-gray-800">{listing.produce}</h3>
+                    <p className="text-gray-600 text-xs flex items-center gap-1">
+                      📍 {listing.location}
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">${listing.price}/kg</p>
-                  <p className="text-muted text-xs">{listing.quantity}kg available</p>
+                  <p className="text-2xl font-bold text-green-600">KSH {listing.price}/kg</p>
+                  <p className="text-gray-600 text-xs">{listing.quantity}kg available</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                <div className="bg-[#252b33] rounded p-2">
-                  <p className="text-muted text-xs">Condition</p>
-                  <p className="text-foreground font-medium">{listing.condition}</p>
+                <div className="bg-gradient-to-r from-yellow-50 to-green-50 border border-yellow-200 rounded p-2">
+                  <p className="text-gray-600 text-xs">Condition</p>
+                  <p className="text-gray-800 font-semibold">{listing.condition}</p>
                 </div>
-                <div className="bg-[#252b33] rounded p-2">
-                  <p className="text-muted text-xs">Storage Age</p>
-                  <p className="text-foreground font-medium">{listing.storageTime}</p>
+                <div className="bg-gradient-to-r from-green-50 to-yellow-50 border border-green-200 rounded p-2">
+                  <p className="text-gray-600 text-xs">Storage Age</p>
+                  <p className="text-gray-800 font-semibold">{listing.storageTime}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 mb-4 text-xs">
-                <span className="text-yellow-400">⭐ {listing.rating}</span>
-                <span className="text-muted">({listing.reviews} reviews)</span>
-                <span className="text-muted">Farmer: {listing.farmer}</span>
+              <div className="flex items-center gap-2 mb-4 text-xs bg-yellow-50 p-2 rounded border border-yellow-200">
+                <span className="text-yellow-500">⭐ {listing.rating}</span>
+                <span className="text-gray-600">({listing.reviews} reviews)</span>
+                <span className="text-gray-700">👤 {listing.farmer}</span>
               </div>
 
-              <div className="mb-4 p-3 bg-primary/10 rounded border border-primary/20">
-                <p className="text-foreground font-semibold text-sm">Total: ${listing.totalPrice}</p>
-                <p className="text-muted text-xs">Order {listing.quantity}kg</p>
+              <div className="mb-4 p-3 bg-gradient-to-r from-yellow-100 to-green-100 rounded border-2 border-green-300 shadow-sm">
+                <p className="text-gray-800 font-bold text-sm">Total: KSH {listing.totalPrice.toLocaleString()}</p>
+                <p className="text-gray-700 text-xs">Order {listing.quantity}kg</p>
               </div>
 
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 border-border text-foreground hover:bg-[#252b33] bg-transparent"
+                  className="flex-1 border-2 border-yellow-400 text-gray-700 hover:bg-yellow-50"
                 >
                   View Details
                 </Button>
-                <Button className="flex-1 bg-primary hover:bg-primary-dark text-white">Contact Farmer</Button>
+                <Button className="flex-1 bg-gradient-to-r from-yellow-400 to-green-500 hover:from-yellow-500 hover:to-green-600 text-white shadow-md">
+                  Contact Farmer
+                </Button>
               </div>
             </div>
           </div>

@@ -21,9 +21,10 @@ export default function MarketInsights() {
 
   const fetchFarmerAndMarketData = async (farmerId: string) => {
     try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
       const [farmerRes, marketRes] = await Promise.all([
-        fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`),
-        fetch(`https://www.kisumu.codewithseth.co.ke/api/market/produce/tomato`),
+        fetch(`${API_BASE}/farmers/profile/${farmerId}`),
+        fetch(`${API_BASE}/market/produce/tomato`),
       ])
 
       const farmerData = await farmerRes.json()
@@ -46,43 +47,43 @@ export default function MarketInsights() {
   return (
     <DashboardLayout farmer={farmer}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary/10 to-chart-4/10 rounded-2xl p-6 border border-border">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-chart-4 bg-clip-text text-transparent">
+        {/* Header with Brand Colors */}
+        <div className="bg-gradient-to-r from-yellow-400 to-green-500 text-white rounded-lg p-6 shadow-lg">
+          <h1 className="text-3xl font-bold">
             📈 Market Insights & Pricing
           </h1>
-          <p className="text-muted-foreground text-sm mt-2">Real-time market data for your region</p>
+          <p className="text-white/90 text-sm mt-2">Real-time market data for your region</p>
         </div>
 
-        {/* Filters */}
+        {/* Filters with Brand Colors */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-            <label className="block text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+          <div className="bg-white border-2 border-yellow-200 rounded-xl p-4 shadow-sm hover:border-green-300 transition-colors">
+            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <span>🥕</span> Produce Type
             </label>
             <select
               value={selectedProduce}
               onChange={(e) => setSelectedProduce(e.target.value)}
-              className="w-full bg-background border border-border text-foreground rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary"
+              className="w-full bg-white border-2 border-yellow-300 text-gray-800 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               {produceOptions.map((prod) => (
-                <option key={prod} value={prod} className="bg-background">
+                <option key={prod} value={prod}>
                   {prod.charAt(0).toUpperCase() + prod.slice(1)}
                 </option>
               ))}
             </select>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-            <label className="block text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+          <div className="bg-white border-2 border-yellow-200 rounded-xl p-4 shadow-sm hover:border-green-300 transition-colors">
+            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <span>📍</span> Region
             </label>
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="w-full bg-background border border-border text-foreground rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary"
+              className="w-full bg-white border-2 border-yellow-300 text-gray-800 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               {regions.map((reg) => (
-                <option key={reg} value={reg} className="bg-background">
+                <option key={reg} value={reg}>
                   {reg}
                 </option>
               ))}
@@ -97,47 +98,47 @@ export default function MarketInsights() {
             <MarketChart data={marketData} />
           </div>
 
-          {/* Quick Info */}
+          {/* Quick Info with Brand Colors */}
           <div className="space-y-4">
-            <div className="bg-gradient-to-br from-primary/10 to-chart-4/10 border border-primary/20 rounded-2xl p-5 shadow-sm">
-              <p className="text-muted-foreground text-sm mb-2 flex items-center gap-2">
+            <div className="bg-gradient-to-br from-yellow-100 to-green-100 border-2 border-green-300 rounded-2xl p-5 shadow-lg">
+              <p className="text-gray-700 text-sm mb-2 flex items-center gap-2">
                 <span>💰</span> Current Price
               </p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-primary to-chart-4 bg-clip-text text-transparent">
-                ${marketData[0]?.currentPrice || "0"}
+              <p className="text-4xl font-bold text-green-600">
+                KSH {marketData[0]?.currentPrice || "0"}
               </p>
-              <p className="text-muted-foreground text-xs mt-2">per kg</p>
+              <p className="text-gray-600 text-xs mt-2">per kg</p>
             </div>
 
-            <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-              <p className="text-muted-foreground text-sm mb-2 flex items-center gap-2">
+            <div className="bg-white border-2 border-yellow-200 rounded-2xl p-5 shadow-md">
+              <p className="text-gray-700 text-sm mb-2 flex items-center gap-2">
                 <span>📊</span> Market Trend
               </p>
               <div className="flex items-center gap-2">
                 <span
                   className={`text-3xl font-bold ${
-                    (marketData[0]?.trendPercentage || 0) > 0 ? "text-primary" : "text-destructive"
+                    (marketData[0]?.trendPercentage || 0) > 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   {(marketData[0]?.trendPercentage || 0) > 0 ? "+" : ""}
                   {marketData[0]?.trendPercentage || 0}%
                 </span>
-                <span className="text-muted-foreground text-xs">vs last week</span>
+                <span className="text-gray-600 text-xs">vs last week</span>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-5 shadow-sm">
-              <p className="text-muted-foreground text-sm mb-2 flex items-center gap-2">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-2xl p-5 shadow-md">
+              <p className="text-gray-700 text-sm mb-2 flex items-center gap-2">
                 <span>📈</span> Demand Level
               </p>
-              <p className="text-2xl font-bold text-primary">{marketData[0]?.demand || "Medium"}</p>
+              <p className="text-2xl font-bold text-green-600">{marketData[0]?.demand || "Medium"}</p>
             </div>
 
-            <div className="bg-gradient-to-br from-chart-4/5 to-chart-4/10 border border-chart-4/20 rounded-2xl p-5 shadow-sm">
-              <p className="text-muted-foreground text-sm mb-2 flex items-center gap-2">
+            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-2xl p-5 shadow-md">
+              <p className="text-gray-700 text-sm mb-2 flex items-center gap-2">
                 <span>📦</span> Supply Level
               </p>
-              <p className="text-2xl font-bold text-chart-4">{marketData[0]?.supply || "Medium"}</p>
+              <p className="text-2xl font-bold text-yellow-600">{marketData[0]?.supply || "Medium"}</p>
             </div>
           </div>
         </div>
@@ -145,41 +146,41 @@ export default function MarketInsights() {
         {/* Price Comparison */}
         <PriceComparison selectedProduce={selectedProduce} />
 
-        {/* Market Recommendations */}
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+        {/* Market Recommendations with Brand Colors */}
+        <div className="bg-white border-2 border-yellow-200 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span>💡</span> Smart Recommendations
           </h2>
           <div className="space-y-4">
-            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-primary/5 to-chart-4/5 rounded-xl border border-primary/10">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-chart-4 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-yellow-100 to-green-100 rounded-xl border-2 border-green-300 shadow-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-green-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                 <span className="text-xl">💡</span>
               </div>
               <div>
-                <p className="text-foreground font-semibold">Peak Price Expected</p>
-                <p className="text-muted-foreground text-sm mt-1">
+                <p className="text-gray-800 font-semibold">Peak Price Expected</p>
+                <p className="text-gray-600 text-sm mt-1">
                   Market prices are trending upward. Consider waiting 2-3 days for peak prices.
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-chart-4/5 to-primary/5 rounded-xl border border-chart-4/10">
-              <div className="w-10 h-10 bg-gradient-to-br from-chart-4 to-primary rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-green-100 to-yellow-100 rounded-xl border-2 border-yellow-300 shadow-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                 <span className="text-xl">📊</span>
               </div>
               <div>
-                <p className="text-foreground font-semibold">High Demand in {region}</p>
-                <p className="text-muted-foreground text-sm mt-1">
+                <p className="text-gray-800 font-semibold">High Demand in {region}</p>
+                <p className="text-gray-600 text-sm mt-1">
                   Buyers in {region} region are actively seeking {selectedProduce}. Direct sales available.
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-primary/5 to-chart-4/5 rounded-xl border border-primary/10">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-chart-4 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-yellow-100 to-green-100 rounded-xl border-2 border-green-300 shadow-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-green-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                 <span className="text-xl">🎯</span>
               </div>
               <div>
-                <p className="text-foreground font-semibold">Optimal Storage Time</p>
-                <p className="text-muted-foreground text-sm mt-1">
+                <p className="text-gray-800 font-semibold">Optimal Storage Time</p>
+                <p className="text-gray-600 text-sm mt-1">
                   Your {selectedProduce} quality can be maintained for 4-5 more days at current conditions.
                 </p>
               </div>

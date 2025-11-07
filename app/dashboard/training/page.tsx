@@ -19,7 +19,8 @@ export default function Training() {
 
   const fetchFarmerData = async (farmerId: string) => {
     try {
-      const res = await fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`)
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const res = await fetch(`${API_BASE}/farmers/profile/${farmerId}`)
       const data = await res.json()
       setFarmer(data)
     } catch (error) {
@@ -34,38 +35,38 @@ export default function Training() {
   return (
     <DashboardLayout farmer={farmer}>
       <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground text-balance">Training & Learning</h1>
-          <p className="text-muted text-sm mt-1">Improve your Stay Fresh farming skills</p>
+        {/* Header with Brand Colors */}
+        <div className="bg-gradient-to-r from-yellow-400 to-green-500 text-white rounded-lg p-6 shadow-lg">
+          <h1 className="text-3xl font-bold text-balance">Training & Learning</h1>
+          <p className="text-white/90 text-sm mt-1">Improve your Stay Fresh farming skills</p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats with Brand Colors */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[#1a1f26] border border-border rounded-lg p-4">
-            <p className="text-muted text-sm mb-1">Courses Completed</p>
-            <p className="text-2xl font-bold text-primary">3</p>
+          <div className="bg-white border border-yellow-200 rounded-lg p-4 shadow-sm">
+            <p className="text-gray-600 text-sm mb-1">Courses Completed</p>
+            <p className="text-2xl font-bold text-green-600">3</p>
           </div>
-          <div className="bg-[#1a1f26] border border-border rounded-lg p-4">
-            <p className="text-muted text-sm mb-1">Learning Hours</p>
-            <p className="text-2xl font-bold text-primary">12</p>
+          <div className="bg-white border border-yellow-200 rounded-lg p-4 shadow-sm">
+            <p className="text-gray-600 text-sm mb-1">Learning Hours</p>
+            <p className="text-2xl font-bold text-green-600">12</p>
           </div>
-          <div className="bg-[#1a1f26] border border-border rounded-lg p-4">
-            <p className="text-muted text-sm mb-1">Certificates Earned</p>
-            <p className="text-2xl font-bold text-primary">2</p>
+          <div className="bg-white border border-yellow-200 rounded-lg p-4 shadow-sm">
+            <p className="text-gray-600 text-sm mb-1">Certificates Earned</p>
+            <p className="text-2xl font-bold text-green-600">2</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-border flex gap-6">
+        <div className="border-b border-yellow-200 flex gap-6">
           {["courses", "paths"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`py-3 font-medium border-b-2 transition-colors capitalize ${
                 activeTab === tab
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted hover:text-foreground"
+                  ? "border-green-500 text-green-600"
+                  : "border-transparent text-gray-600 hover:text-green-600"
               }`}
             >
               {tab === "courses" && "📚 All Courses"}
