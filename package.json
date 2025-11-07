@@ -9,9 +9,21 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "lint": "eslint .",
     "start": "next start",
-    "server": "cd server && npm start"
+    "server": "cd server && npm start",
+    "cap:setup": "./setup-capacitor.sh",
+    "cap:sync": "npx cap sync android",
+    "cap:build": "./build-android.sh",
+    "cap:build:clean": "./build-android.sh --clean",
+    "cap:build:release": "./build-android.sh --release",
+    "cap:open": "npx cap open android",
+    "android:install": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "android:logs": "adb logcat | grep 'Stay Fresh'"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/splash-screen": "^7.0.3",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
