@@ -12,6 +12,7 @@ A comprehensive full-stack cold storage management platform designed for farmers
 - **Direct Marketplace**: List produce and connect directly with buyers
 - **Training & Learning**: Access educational courses on cold storage best practices
 - **Billing Management**: Track payments with multiple cycle options and automatic discounts
+- **📧 Email Notifications**: Automated emails for registrations, sales, alerts, and billing reminders
 
 ### For Administrators
 - **Dashboard Overview**: Comprehensive statistics and analytics
@@ -19,6 +20,14 @@ A comprehensive full-stack cold storage management platform designed for farmers
 - **Room Management**: Create and manage cold storage units
 - **System Health Monitoring**: Track sensor status and system alerts
 - **Revenue Analytics**: View billing trends and revenue reports
+
+### Email Notification System
+- **Welcome Emails**: Sent automatically when farmers register
+- **Sale Notifications**: Alerts when produce is sold with profit calculations
+- **Sensor Alerts**: Urgent notifications for temperature/humidity anomalies
+- **Billing Reminders**: Automated payment reminders and overdue notices
+- **Marketplace Offers**: Notifications when buyers make offers
+- **Professional HTML Templates**: Green-themed, responsive email designs
 
 ## 🏗️ Technology Stack
 
@@ -31,10 +40,12 @@ A comprehensive full-stack cold storage management platform designed for farmers
 
 ### Backend
 - **Node.js** with Express.js
-- **MongoDB** with Mongoose ODM
-- **JWT** Authentication
-- **bcryptjs** Password hashing
-- **REST API** architecture
+- **MongoDB Atlas** - Cloud database
+- **Mongoose** - ODM for MongoDB
+- **JWT** Authentication (30-day expiry)
+- **bcryptjs** - Password hashing
+- **Nodemailer** - Email service with Gmail SMTP
+- **REST API** architecture with 70+ endpoints
 
 ## 📁 Project Structure
 
@@ -72,6 +83,10 @@ coldroom/
 │   │   ├── training.js
 │   │   └── admin.js
 │   ├── middleware/       # Auth middleware
+│   ├── utils/            # Email service utilities
+│   ├── .env              # Environment variables
+│   ├── .env.example      # Environment template
+│   ├── EMAIL_SYSTEM.md   # Email documentation
 │   ├── package.json
 │   └── index.js          # Server entry point
 ├── .env.local            # Frontend environment variables
@@ -114,15 +129,29 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api
 Create `server/.env`:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/cold-chain
+MONGODB_URI=mongodb+srv://your_user:your_password@cluster0.mongodb.net/coldchain
 JWT_SECRET=your_super_secret_jwt_key_here
 NODE_ENV=development
+
+# Email Configuration (Gmail)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_gmail_app_password
+EMAIL_FROM=Cold Chain System <your_email@gmail.com>
+FRONTEND_URL=http://localhost:3000
 ```
+
+**Important:** For Gmail, you need to:
+1. Enable 2-Step Verification in your Google Account
+2. Generate an App Password at https://myaccount.google.com/apppasswords
+3. Use the 16-character app password (without spaces) as `EMAIL_PASS`
 
 4. **Start MongoDB**
 ```bash
+# Using MongoDB Atlas (recommended)
+# Update MONGODB_URI in server/.env with your Atlas connection string
+
+# OR use local MongoDB
 # Make sure MongoDB is running on localhost:27017
-# Or use MongoDB Atlas and update MONGODB_URI
 ```
 
 5. **Run the application**

@@ -1,0 +1,110 @@
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+
+export default function LoginForm() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
+    try {
+      const response = await fetch("http://localhost:5000/api/farmers/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.message || "Login failed")
+        return
+      }
+
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("farmerId", data.farmer._id)
+      localStorage.setItem("userEmail", data.farmer.email)
+      
+      // Check if admin and redirect accordingly
+      const isAdmin = data.farmer.email === "admin@coldchain.com" || data.farmer.email === "superuser@coldchain.com"
+      if (isAdmin) {
+        localStorage.setItem("isAdmin", "true")
+        router.push("/admin")
+      } else {
+        router.push("/dashboard")
+      }
+    } catch (err) {
+      setError("Connection error. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 text-destructive text-sm flex items-start gap-2">
+          <span className="text-lg">⚠️</span>
+          <span>{error}</span>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-foreground">Email Address</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="farmer@example.com"
+          className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-foreground">Password</label>
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Enter your password"
+          className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+          required
+        />
+      </div>
+
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-gradient-to-r from-primary to-chart-4 hover:from-primary/90 hover:to-chart-4/90 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+      >
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="animate-spin">⏳</span> Logging in...
+          </span>
+        ) : (
+          "Login"
+        )}
+      </Button>
+    </form>
+  )
+}
