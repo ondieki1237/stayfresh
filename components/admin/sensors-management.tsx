@@ -13,7 +13,7 @@ export default function SensorsManagement() {
 
   const fetchSensors = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/sensors")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/sensors")
       const data = await response.json()
       setSensors(Array.isArray(data) ? data : [])
     } catch (error) {

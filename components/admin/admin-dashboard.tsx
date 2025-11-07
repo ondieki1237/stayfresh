@@ -30,10 +30,10 @@ export default function AdminDashboard({ stats }: AdminDashboardProps) {
   const fetchStats = async () => {
     try {
       const [farmersRes, roomsRes, produceRes, billingRes] = await Promise.all([
-        fetch("http://localhost:5000/api/farmers"),
-        fetch("http://localhost:5000/api/rooms"),
-        fetch("http://localhost:5000/api/produce"),
-        fetch("http://localhost:5000/api/billing"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/farmers"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/rooms"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/produce"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/billing"),
       ])
 
       const [farmers, rooms, produce, billing] = await Promise.all([

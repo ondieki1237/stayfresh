@@ -19,7 +19,7 @@ export default function Training() {
 
   const fetchFarmerData = async (farmerId: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/farmers/profile/${farmerId}`)
+      const res = await fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`)
       const data = await res.json()
       setFarmer(data)
     } catch (error) {

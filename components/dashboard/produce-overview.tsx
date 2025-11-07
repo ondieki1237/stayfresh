@@ -27,7 +27,7 @@ export default function ProduceOverview({ farmerId }: ProduceOverviewProps) {
 
   const fetchProduce = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/produce/farmer/${farmerId}`)
+      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/produce/farmer/${farmerId}`)
       const data = await response.json()
       setProduce(Array.isArray(data) ? data : [])
     } catch (error) {

@@ -31,7 +31,7 @@ export default function BillingStatus({ farmerId }: BillingStatusProps) {
 
   const fetchBilling = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/billing/farmer/${farmerId}`)
+      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/billing/farmer/${farmerId}`)
       const data = await response.json()
       setBilling(Array.isArray(data) ? data : [])
     } catch (error) {

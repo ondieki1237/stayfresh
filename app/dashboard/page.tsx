@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import DashboardLayout from "@/components/layout/dashboard-layout"
 import RoomList from "@/components/dashboard/room-list"
+import RentRoom from "@/components/dashboard/rent-room"
 import ProduceOverview from "@/components/dashboard/produce-overview"
 import BillingStatus from "@/components/dashboard/billing-status"
 
@@ -23,6 +25,7 @@ export default function Dashboard() {
   const [farmer, setFarmer] = useState<Farmer | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("rooms")
+  const [showRentRoom, setShowRentRoom] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem("token")
@@ -38,7 +41,7 @@ export default function Dashboard() {
 
   const fetchFarmerData = async (farmerId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/farmers/profile/${farmerId}`, {
+      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       const data = await response.json()
@@ -48,6 +51,23 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRoomRented = () => {
+    // Refresh farmer data and switch to rooms tab
+    if (farmer?._id) {
+      fetchFarmerData(farmer._id)
+    }
+    setShowRentRoom(false)
+    setActiveTab("rooms")
+  }
+
+  const handleRentMore = () => {
+    setShowRentRoom(true)
+  }
+
+  const handleBackToMyRooms = () => {
+    setShowRentRoom(false)
   }
 
   if (loading) return (
@@ -94,7 +114,25 @@ export default function Dashboard() {
 
         {/* Tab Content */}
         <div>
-          {activeTab === "rooms" && farmer && <RoomList farmerId={farmer._id} />}
+          {activeTab === "rooms" && farmer && (
+            <>
+              {showRentRoom ? (
+                <div className="space-y-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBackToMyRooms}
+                    className="mb-2"
+                  >
+                    ← Back to My Rooms
+                  </Button>
+                  <RentRoom farmerId={farmer._id} onRoomRented={handleRoomRented} />
+                </div>
+              ) : (
+                <RoomList farmerId={farmer._id} onRentMore={handleRentMore} />
+              )}
+            </>
+          )}
           {activeTab === "produce" && farmer && <ProduceOverview farmerId={farmer._id} />}
           {activeTab === "billing" && farmer && <BillingStatus farmerId={farmer._id} />}
         </div>

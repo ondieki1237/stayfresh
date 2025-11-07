@@ -22,8 +22,8 @@ export default function MarketInsights() {
   const fetchFarmerAndMarketData = async (farmerId: string) => {
     try {
       const [farmerRes, marketRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/farmers/profile/${farmerId}`),
-        fetch(`http://localhost:5000/api/market/produce/tomato`),
+        fetch(`https://www.kisumu.codewithseth.co.ke/api/farmers/profile/${farmerId}`),
+        fetch(`https://www.kisumu.codewithseth.co.ke/api/market/produce/tomato`),
       ])
 
       const farmerData = await farmerRes.json()

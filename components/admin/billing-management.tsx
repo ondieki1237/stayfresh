@@ -16,7 +16,7 @@ export default function BillingManagement() {
 
   const fetchBillings = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/billing")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/billing")
       const data = await response.json()
       setBillings(Array.isArray(data) ? data : [])
     } catch (error) {

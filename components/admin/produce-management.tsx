@@ -16,7 +16,7 @@ export default function ProduceManagement() {
 
   const fetchProduce = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/produce")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/produce")
       const data = await response.json()
       setProduce(Array.isArray(data) ? data : [])
     } catch (error) {

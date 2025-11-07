@@ -16,7 +16,7 @@ export default function RoomsManagement() {
 
   const fetchRooms = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/rooms")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/rooms")
       const data = await response.json()
       setRooms(Array.isArray(data) ? data : [])
     } catch (error) {

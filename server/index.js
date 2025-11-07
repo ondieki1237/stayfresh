@@ -13,7 +13,9 @@ import marketplaceRoutes from "./routes/marketplace.js"
 import trainingRoutes from "./routes/training.js"
 import chamaRoutes from "./routes/chamas.js"
 import ussdRoutes from "./routes/ussd.js"
+import stockingRoutes from "./routes/stocking.js"
 import { startPowerScheduler } from "./services/powerScheduler.js"
+import { startPriceMonitoring } from "./services/priceMonitor.js"
 
 dotenv.config()
 
@@ -51,6 +53,7 @@ app.use("/api/marketplace", marketplaceRoutes)
 app.use("/api/training", trainingRoutes)
 app.use("/api/chamas", chamaRoutes)
 app.use("/api/ussd", ussdRoutes)
+app.use("/api/stocking", stockingRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -64,4 +67,9 @@ app.listen(PORT, () => {
   
   // Start the power scheduler for automatic room power management
   startPowerScheduler(5) // Check every 5 minutes
+  
+  // Start price monitoring service for target price alerts
+  startPriceMonitoring(60) // Check market prices every 60 minutes
+  
+  console.log("✅ All services started successfully")
 })

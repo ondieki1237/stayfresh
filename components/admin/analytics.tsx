@@ -14,10 +14,10 @@ export default function Analytics() {
     try {
       // Fetch all data for analytics
       const [roomsRes, produceRes, billingsRes, farmersRes] = await Promise.all([
-        fetch("http://localhost:5000/api/rooms"),
-        fetch("http://localhost:5000/api/produce"),
-        fetch("http://localhost:5000/api/billing"),
-        fetch("http://localhost:5000/api/farmers"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/rooms"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/produce"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/billing"),
+        fetch("https://www.kisumu.codewithseth.co.ke/api/farmers"),
       ])
 
       const [rooms, produce, billings, farmers] = await Promise.all([

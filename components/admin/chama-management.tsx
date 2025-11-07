@@ -76,7 +76,7 @@ export default function ChamaManagement() {
 
   const fetchChamas = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/chamas")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/chamas")
       const data = await response.json()
       setChamas(data)
     } catch (error) {
@@ -88,7 +88,7 @@ export default function ChamaManagement() {
 
   const fetchRooms = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/rooms")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/rooms")
       const data = await response.json()
       // Only show available rooms or rooms already assigned to this chama
       setRooms(data.filter((room: Room) => room.status === "Available" || room.roomType === "shared"))
@@ -107,8 +107,8 @@ export default function ChamaManagement() {
     
     try {
       const url = editingChama
-        ? `http://localhost:5000/api/chamas/${editingChama._id}`
-        : "http://localhost:5000/api/chamas"
+        ? `https://www.kisumu.codewithseth.co.ke/api/chamas/${editingChama._id}`
+        : "https://www.kisumu.codewithseth.co.ke/api/chamas"
       
       const method = editingChama ? "PUT" : "POST"
       
@@ -136,7 +136,7 @@ export default function ChamaManagement() {
     if (!confirm("Are you sure you want to delete this chama?")) return
 
     try {
-      const response = await fetch(`http://localhost:5000/api/chamas/${id}`, {
+      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/chamas/${id}`, {
         method: "DELETE",
       })
 
@@ -150,7 +150,7 @@ export default function ChamaManagement() {
 
   const handleAssignRoom = async (chamaId: string, roomId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/chamas/${chamaId}/assign-room`, {
+      const response = await fetch(`https://www.kisumu.codewithseth.co.ke/api/chamas/${chamaId}/assign-room`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId }),

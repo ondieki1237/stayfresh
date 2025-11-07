@@ -12,6 +12,7 @@ import SensorsManagement from "@/components/admin/sensors-management"
 import Analytics from "@/components/admin/analytics"
 import Settings from "@/components/admin/settings"
 import ChamaManagement from "@/components/admin/chama-management"
+import AbandonmentRequests from "@/components/admin/abandonment-requests"
 
 export default function AdminPage() {
   const router = useRouter()
@@ -36,7 +37,7 @@ export default function AdminPage() {
 
   const fetchAdminData = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/stats", {
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/admin/stats", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       
@@ -58,6 +59,7 @@ export default function AdminPage() {
     { id: "chamas", icon: "👭", label: "Chamas" },
     { id: "produce", icon: "📦", label: "Produce" },
     { id: "billing", icon: "💳", label: "Billing" },
+    { id: "abandonment", icon: "🚪", label: "Abandonment" },
     { id: "sensors", icon: "📡", label: "Sensors" },
     { id: "analytics", icon: "📈", label: "Analytics" },
     { id: "settings", icon: "⚙️", label: "Settings" },
@@ -86,7 +88,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs - Responsive Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-2 bg-muted/30 p-2 rounded-xl">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-10 gap-2 bg-muted/30 p-2 rounded-xl">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -111,6 +113,7 @@ export default function AdminPage() {
           {activeTab === "chamas" && <ChamaManagement />}
           {activeTab === "produce" && <ProduceManagement />}
           {activeTab === "billing" && <BillingManagement />}
+          {activeTab === "abandonment" && <AbandonmentRequests />}
           {activeTab === "sensors" && <SensorsManagement />}
           {activeTab === "analytics" && <Analytics />}
           {activeTab === "settings" && <Settings />}

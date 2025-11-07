@@ -25,7 +25,7 @@ export default function LoginForm() {
     setError("")
 
     try {
-      const response = await fetch("http://localhost:5000/api/farmers/login", {
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/farmers/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
