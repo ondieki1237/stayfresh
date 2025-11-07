@@ -419,13 +419,15 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Current Price</p>
                                 <p className="text-lg font-bold text-primary">
-                                  ${produce.currentPrice || "0.00"}/kg
+                                  KES { Number(produce.currentPrice || 0).toFixed(2) }
+                                  /kg
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Market Price</p>
                                 <p className="text-lg font-bold text-chart-4">
-                                  ${produce.marketPrice || "0.00"}/kg
+                                  KES { Number(produce.marketPrice || 0).toFixed(2) }
+                                  /kg
                                 </p>
                               </div>
                             </div>
@@ -467,13 +469,13 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Current</p>
                                 <p className="text-sm font-bold text-primary">
-                                  ${stocking.currentMarketPrice.toFixed(2)}
+                                  KES {stocking.currentMarketPrice.toFixed(2)}
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
                                 <p className="text-xs text-muted-foreground">Target</p>
                                 <p className="text-sm font-bold text-chart-4">
-                                  ${stocking.targetPrice.toFixed(2)}
+                                  KES {stocking.targetPrice.toFixed(2)}
                                 </p>
                               </div>
                               <div className="bg-card/50 rounded-lg p-2">
@@ -528,7 +530,7 @@ export default function RoomList({ farmerId, onRentMore }: RoomListProps) {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Amount Due</span>
-                          <span className="font-bold text-chart-4">${roomBilling.amountDue || "0.00"}</span>
+                          <span className="font-bold text-chart-4">KES { Number(roomBilling.amountDue || 0).toFixed(2) }</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Status</span>

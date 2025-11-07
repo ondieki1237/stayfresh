@@ -337,6 +337,35 @@ export default function ChamaManagement() {
                     onChange={handleInputChange}
                   />
                 </div>
+
+                {/* Members list - name and phone */}
+                <div className="space-y-2">
+                  <Label>Members</Label>
+                  <div className="space-y-2">
+                    {membersList.map((m, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="Member name"
+                          value={m.name}
+                          onChange={(e) => updateMember(idx, "name", e.target.value)}
+                          className="flex-1"
+                        />
+                        <Input
+                          placeholder="Phone"
+                          value={m.phone}
+                          onChange={(e) => updateMember(idx, "phone", e.target.value)}
+                          className="w-40"
+                        />
+                        <Button type="button" variant="destructive" size="icon" onClick={() => removeMember(idx)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" onClick={addMember} className="w-full">
+                      <Plus className="w-4 h-4 mr-2" /> Add Member
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">
