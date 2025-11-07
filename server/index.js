@@ -14,6 +14,8 @@ import trainingRoutes from "./routes/training.js"
 import chamaRoutes from "./routes/chamas.js"
 import ussdRoutes from "./routes/ussd.js"
 import stockingRoutes from "./routes/stocking.js"
+import predictionsRoutes from "./routes/predictions.js"
+import marketInsightsRoutes from "./routes/market-insights.js"
 import { startPowerScheduler } from "./services/powerScheduler.js"
 import { startPriceMonitoring } from "./services/priceMonitor.js"
 
@@ -54,6 +56,8 @@ app.use("/api/training", trainingRoutes)
 app.use("/api/chamas", chamaRoutes)
 app.use("/api/ussd", ussdRoutes)
 app.use("/api/stocking", stockingRoutes)
+app.use("/api/predictions", predictionsRoutes)
+app.use("/api/market-insights", marketInsightsRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {

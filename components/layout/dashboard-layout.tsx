@@ -63,6 +63,7 @@ export default function DashboardLayout({ children, farmer }: DashboardLayoutPro
             { icon: "🏠", label: "My Rooms", href: "/dashboard/rooms" },
             { icon: "🥕", label: "My Produce", href: "/dashboard/produce" },
             { icon: "📈", label: "Market Insights", href: "/dashboard/market" },
+            { icon: "🌍", label: "Global Prices", href: "/dashboard/global-prices" },
             { icon: "🛒", label: "Marketplace", href: "/dashboard/marketplace" },
             { icon: "📚", label: "Training", href: "/dashboard/training" },
             { icon: "👤", label: "My Profile", href: "/dashboard/profile" },
