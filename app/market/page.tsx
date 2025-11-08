@@ -57,7 +57,7 @@ export default function MarketPage() {
   const fetchProduce = async () => {
     try {
       setLoading(true)
-      const response = await fetch("http://localhost:5000/api/marketplace/produce")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/marketplace/produce")
       
       if (!response.ok) {
         throw new Error("Failed to fetch produce")
@@ -75,7 +75,7 @@ export default function MarketPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/marketplace/produce/stats")
+      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/marketplace/produce/stats")
       
       if (response.ok) {
         const data = await response.json()

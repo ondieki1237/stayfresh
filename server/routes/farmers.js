@@ -61,7 +61,7 @@ router.post("/register", async (req, res) => {
   }
 })
 
-// Login
+// Login (handle both with and without trailing slash)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body

@@ -37,6 +37,16 @@ app.options('*', cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Middleware to remove trailing slashes from URLs
+app.use((req, res, next) => {
+  if (req.path.substr(-1) === '/' && req.path.length > 1) {
+    const query = req.url.slice(req.path.length)
+    res.redirect(301, req.path.slice(0, -1) + query)
+  } else {
+    next()
+  }
+})
+
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/cold-chain")
