@@ -4,7 +4,9 @@ import Stocking from "../models/Stocking.js"
 import Room from "../models/Room.js"
 import Farmer from "../models/Farmer.js"
 import MarketData from "../models/MarketData.js"
+import Produce from "../models/Produce.js"
 import { authMiddleware } from "../middleware/auth.js"
+import { sendEmail } from "../utils/emailService.js"
 
 const router = express.Router()
 
@@ -317,7 +319,7 @@ router.patch("/:id/approve", authMiddleware, async (req, res) => {
     // Update stocking
     stocking.approvalStatus = "Approved"
     stocking.status = "Monitoring"
-    stocking.approvedBy = req.user.id
+    stocking.approvedBy = req.userId
     stocking.approvedAt = new Date()
     await stocking.save()
 
@@ -329,11 +331,161 @@ router.patch("/:id/approve", authMiddleware, async (req, res) => {
     }
     await room.save()
 
+    // Check if there's existing legacy produce that matches this stocking
+    // If found, mark it as "Removed" to avoid duplication in marketplace
+    const existingLegacyProduce = await Produce.findOne({
+      farmer: stocking.farmer._id,
+      room: stocking.room._id,
+      produceType: stocking.produceType,
+      status: { $in: ["Active", "Listed"] },
+      sold: false
+    })
+
+    if (existingLegacyProduce) {
+      existingLegacyProduce.status = "Removed"
+      await existingLegacyProduce.save()
+      console.log(`🗑️  Removed legacy produce ${existingLegacyProduce._id} to avoid duplication`)
+    }
+
+    // Create Produce entry for marketplace visibility
+    const produce = new Produce({
+      farmer: stocking.farmer._id,
+      room: stocking.room._id,
+      produceType: stocking.produceType,
+      quantity: stocking.quantity,
+      currentMarketPrice: stocking.currentMarketPrice,
+      expectedPeakPrice: stocking.targetPrice,
+      minimumSellingPrice: stocking.targetPrice * 0.9,
+      condition: stocking.condition,
+      status: "Listed",
+      storageDate: stocking.stockedAt,
+      sold: false,
+      perishabilityLevel: "Medium",
+      daysUntilPerish: 14 // Default 2 weeks
+    })
+    await produce.save()
+
     await stocking.populate("approvedBy", "firstName lastName")
 
+    // Send approval email to farmer
+    try {
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .success { background: #d1fae5; padding: 20px; border-radius: 5px; border-left: 4px solid #22c55e; margin: 20px 0; }
+            .details { background: white; padding: 20px; border-radius: 5px; margin: 15px 0; }
+            .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+            .button { display: inline-block; background: #22c55e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Booking Approved!</h1>
+            </div>
+            <div class="content">
+              <h2>Great News, ${stocking.farmer.firstName}!</h2>
+              
+              <div class="success">
+                <h3 style="margin: 0;">✨ Your Product Has Been Saved Successfully</h3>
+                <p style="margin: 10px 0 0 0;">Your booking has been approved and your produce is now listed on the marketplace!</p>
+              </div>
+
+              <div class="details">
+                <h3>Booking Details:</h3>
+                <div class="row">
+                  <span>Produce Type:</span>
+                  <strong>${stocking.produceType}</strong>
+                </div>
+                <div class="row">
+                  <span>Quantity:</span>
+                  <strong>${stocking.quantity} kg</strong>
+                </div>
+                <div class="row">
+                  <span>Room Number:</span>
+                  <strong>${room.roomNumber}</strong>
+                </div>
+                <div class="row">
+                  <span>Condition:</span>
+                  <strong>${stocking.condition}</strong>
+                </div>
+                <div class="row">
+                  <span>Current Market Price:</span>
+                  <strong>KSH ${stocking.currentMarketPrice}/kg</strong>
+                </div>
+                <div class="row">
+                  <span>Target Price:</span>
+                  <strong>KSH ${stocking.targetPrice}/kg</strong>
+                </div>
+                <div class="row">
+                  <span>Estimated Value:</span>
+                  <strong style="color: #22c55e; font-size: 18px;">KSH ${stocking.estimatedValue.toFixed(2)}</strong>
+                </div>
+                <div class="row">
+                  <span>Approved By:</span>
+                  <strong>${stocking.approvedBy.firstName} ${stocking.approvedBy.lastName}</strong>
+                </div>
+                <div class="row">
+                  <span>Approved At:</span>
+                  <strong>${new Date().toLocaleString()}</strong>
+                </div>
+              </div>
+
+              <h3>What's Next?</h3>
+              <ul>
+                <li>✅ Your produce is now visible on the marketplace</li>
+                <li>📊 We'll monitor market prices and notify you when target is reached</li>
+                <li>🌡️ Temperature and humidity are being monitored 24/7</li>
+                <li>💰 Buyers can now see and make offers on your produce</li>
+              </ul>
+
+              <div style="text-align: center;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard" class="button">View Dashboard</a>
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/market" class="button" style="background: #3b82f6;">View Marketplace</a>
+              </div>
+
+              ${stocking.notes ? `
+                <div style="background: #fef3c7; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                  <strong>📝 Your Notes:</strong><br>
+                  ${stocking.notes}
+                </div>
+              ` : ''}
+
+              <p>Thank you for using Stay Fresh Cold Storage Management System!</p>
+              
+              <p>Best regards,<br><strong>The Stay Fresh Team</strong></p>
+            </div>
+            <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
+              <p>© ${new Date().getFullYear()} Stay Fresh Management System. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+
+      await sendEmail({
+        to: stocking.farmer.email,
+        subject: `✅ Booking Approved - ${stocking.produceType} (${stocking.quantity}kg)`,
+        html: emailHtml,
+        text: `Great news! Your booking for ${stocking.quantity}kg of ${stocking.produceType} has been approved and is now listed on the marketplace.`
+      })
+
+      console.log(`📧 Approval email sent to ${stocking.farmer.email}`)
+    } catch (emailError) {
+      console.error("❌ Failed to send approval email:", emailError)
+      // Don't fail the request if email fails
+    }
+
     res.json({
-      message: "Booking approved successfully",
-      stocking
+      message: "Booking approved successfully and product saved to marketplace",
+      stocking,
+      produce
     })
   } catch (error) {
     console.error("Approve booking error:", error)
@@ -364,7 +516,7 @@ router.patch("/:id/reject", authMiddleware, async (req, res) => {
     stocking.approvalStatus = "Rejected"
     stocking.status = "Rejected"
     stocking.rejectionReason = reason || "No reason provided"
-    stocking.approvedBy = req.user.id
+    stocking.approvedBy = req.userId
     stocking.approvedAt = new Date()
     await stocking.save()
 

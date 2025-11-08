@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Phone, Mail, MapPin, Package, Loader2, Search, ShoppingCart } from "lucide-react"
+import { Phone, Mail, MapPin, Package, Loader2, Search, ShoppingCart, MessageCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface Produce {
@@ -116,7 +116,16 @@ export default function MarketPage() {
   }
 
   const handleContactSeller = (phone: string, produceName: string) => {
-    window.location.href = `tel:${phone}`
+    // Format phone number for WhatsApp (remove +, spaces, dashes)
+    const cleanPhone = phone.replace(/[^0-9]/g, '')
+    
+    // Create WhatsApp message
+    const message = encodeURIComponent(
+      `Hi! I'm interested in buying your ${produceName}. Is it still available?`
+    )
+    
+    // Open WhatsApp with pre-filled message
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank')
   }
 
   return (
@@ -297,10 +306,10 @@ export default function MarketPage() {
                 <CardFooter className="pt-0">
                   <Button
                     onClick={() => handleContactSeller(item.farmer.phone, item.name)}
-                    className="w-full bg-gradient-to-r from-yellow-400 to-green-600 hover:from-yellow-500 hover:to-green-700 text-white font-semibold h-11"
+                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold h-11"
                   >
-                    <Phone className="mr-2 h-4 w-4" />
-                    Contact Seller
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    WhatsApp Seller
                   </Button>
                 </CardFooter>
               </Card>
