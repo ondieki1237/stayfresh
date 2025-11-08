@@ -9,6 +9,9 @@ import RentRoom from "@/components/dashboard/rent-room"
 import ProduceOverview from "@/components/dashboard/produce-overview"
 import BillingStatus from "@/components/dashboard/billing-status"
 
+// ✅ import the carousel
+import HeaderCarousel from "@/components/dashboard/HeaderCarousel"
+
 interface Farmer {
   _id: string
   firstName: string
@@ -41,7 +44,7 @@ export default function Dashboard() {
 
   const fetchFarmerData = async (farmerId: string) => {
     try {
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api'
       const response = await fetch(`${API_BASE}/farmers/profile/${farmerId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
@@ -55,7 +58,6 @@ export default function Dashboard() {
   }
 
   const handleRoomRented = () => {
-    // Refresh farmer data and switch to rooms tab
     if (farmer?._id) {
       fetchFarmerData(farmer._id)
     }
@@ -85,17 +87,9 @@ export default function Dashboard() {
   return (
     <DashboardLayout farmer={farmer}>
       <div className="pb-20 space-y-6">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-primary to-chart-4 rounded-3xl p-6 text-white shadow-xl">
-          <h1 className="text-2xl font-bold mb-1">Welcome back! 👋</h1>
-          <p className="text-white/80 text-sm">{farmer?.firstName} {farmer?.lastName}</p>
-          <div className="flex items-center gap-2 mt-3 text-sm">
-            <span className="flex items-center gap-1">
-              <span>📍</span>
-              {farmer?.location}
-            </span>
-          </div>
-        </div>
+
+        {/* ✅ Header Carousel */}
+        <HeaderCarousel farmer={farmer} />
 
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3">
@@ -134,6 +128,7 @@ export default function Dashboard() {
               )}
             </>
           )}
+
           {activeTab === "produce" && farmer && <ProduceOverview farmerId={farmer._id} />}
           {activeTab === "billing" && farmer && <BillingStatus farmerId={farmer._id} />}
         </div>

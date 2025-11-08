@@ -1,0 +1,10 @@
+{
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://garage48.codewithseth.co.ke/api"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://garage48.codewithseth.co.ke/api"
+    }
+  }
+}

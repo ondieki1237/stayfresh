@@ -133,10 +133,10 @@ class USSDService {
       case "3":
         // Contact support
         return this.endSession(
-          "END 📞 Contact Support\n\n" +
-          "📧 Email: support@stayfresh.co.ke\n" +
-          "📱 Phone: +254 700 123 456\n" +
-          "🌐 Web: www.stayfresh.co.ke\n\n" +
+          "END Contact Support\n\n" +
+          "Email: support@stayfresh.co.ke\n" +
+          "Phone: +254 700 123 456\n" +
+          "Web: www.stayfresh.co.ke\n\n" +
           "We'll help you get started!"
         )
         
@@ -216,10 +216,10 @@ class USSDService {
             registrationSessions.delete(phoneNumber)
             
             return this.endSession(
-              `END ✅ Chama Registered Successfully!\n\n` +
+              `END Chama Registered Successfully!\n\n` +
               `Name: ${newChama.name}\n` +
               `ID: ${newChama._id}\n\n` +
-              `📧 You'll receive confirmation via SMS.\n` +
+              `You'll receive confirmation via SMS.\n` +
               `Our team will contact you within 24 hours to complete setup.\n\n` +
               `Thank you for choosing Stay Fresh!`
             )
@@ -290,7 +290,7 @@ class USSDService {
       
       let menu = "CON Select Chama to Join:\n\n"
       chamas.forEach((chama, index) => {
-        menu += `${index + 1}. ${chama.name}\n   📍 ${chama.location}\n   👥 ${chama.memberCount} members\n\n`
+        menu += `${index + 1}. ${chama.name}\n   Location: ${chama.location}\n   Members: ${chama.memberCount}\n\n`
       })
       menu += "0. Back"
       
@@ -310,7 +310,7 @@ class USSDService {
             `The Chama admin will be notified.\n` +
             `You'll receive SMS confirmation within 24 hours.\n\n` +
             `For urgent requests, contact:\n` +
-            `📞 +254 700 123 456`
+            `Phone: +254 700 123 456`
           )
         }
         return this.endSession("END Invalid selection. Please dial again.")
@@ -366,12 +366,12 @@ class USSDService {
     const room = chama.sharedRoom
 
     const status = `END Room ${room.roomNumber} Status:\n\n` +
-      `🌡️ Temperature: ${room.temperature}°C\n` +
-      `💧 Humidity: ${room.humidity}%\n` +
-      `⚡ Power: ${room.powerStatus?.toUpperCase() || "ON"}\n` +
-      `📦 Capacity: ${room.currentOccupancy}/${room.capacity}kg\n` +
-      `📊 Occupancy: ${Math.round((room.currentOccupancy / room.capacity) * 100)}%\n` +
-      `✅ Status: ${room.status}`
+      `Temperature: ${room.temperature}°C\n` +
+      `Humidity: ${room.humidity}%\n` +
+      `Power: ${room.powerStatus?.toUpperCase() || "ON"}\n` +
+      `Capacity: ${room.currentOccupancy}/${room.capacity}kg\n` +
+      `Occupancy: ${Math.round((room.currentOccupancy / room.capacity) * 100)}%\n` +
+      `Status: ${room.status}`
 
     return this.endSession(status)
   }
@@ -390,9 +390,9 @@ class USSDService {
     let schedule = `END Market Schedule:\n\n`
     
     if (nextMarketDay) {
-      schedule += `📅 Next Market: ${nextMarketDay.day}\n`
-      schedule += `🕐 Time: ${nextMarketDay.startTime} - ${nextMarketDay.endTime}\n`
-      schedule += `⚡ Power: ${nextMarketDay.powerOffDuringMarket ? "OFF" : "ON"}\n\n`
+      schedule += `Next Market: ${nextMarketDay.day}\n`
+      schedule += `Time: ${nextMarketDay.startTime} - ${nextMarketDay.endTime}\n`
+      schedule += `Power: ${nextMarketDay.powerOffDuringMarket ? "OFF" : "ON"}\n\n`
     }
 
     schedule += `All Market Days:\n`
@@ -423,11 +423,11 @@ class USSDService {
     let info = `END Produce in Room ${chama.sharedRoom.roomNumber}:\n\n`
     
     const totalQuantity = produce.reduce((sum, p) => sum + p.quantity, 0)
-    info += `📦 Total: ${totalQuantity}kg\n\n`
+    info += `Total: ${totalQuantity}kg\n\n`
 
     produce.slice(0, 5).forEach((p, index) => {
       info += `${index + 1}. ${p.name}\n`
-  info += `   ${p.quantity}kg - KSH ${p.currentPrice}/kg\n`
+      info += `   ${p.quantity}kg - KSH ${p.currentPrice}/kg\n`
     })
 
     if (produce.length > 5) {
@@ -458,13 +458,13 @@ class USSDService {
       : "0.00"
 
     const info = `END Billing Information:\n\n` +
-  `💳 Total Bill: KSH ${billing.amountDue.toFixed(2)}\n` +
-      `👥 Members: ${chama.totalMembers}\n` +
-  `💰 Per Member: KSH ${perMember}\n` +
-      `⚡ Energy Used: ${billing.energyUsed}kWh\n` +
-      `📅 Period: ${new Date(billing.billingDate).toLocaleDateString()}\n` +
-      `✅ Status: ${billing.paymentStatus}\n\n` +
-  `Monthly Fee: KSH ${chama.monthlyFee.toLocaleString()}`
+      `Total Bill: KSH ${billing.amountDue.toFixed(2)}\n` +
+      `Members: ${chama.totalMembers}\n` +
+      `Per Member: KSH ${perMember}\n` +
+      `Energy Used: ${billing.energyUsed}kWh\n` +
+      `Period: ${new Date(billing.billingDate).toLocaleDateString()}\n` +
+      `Status: ${billing.paymentStatus}\n\n` +
+      `Monthly Fee: KSH ${chama.monthlyFee.toLocaleString()}`
 
     return this.endSession(info)
   }
@@ -506,8 +506,8 @@ class USSDService {
 
       return this.endSession(
         `Release request submitted!\n\n` +
-        `📦 Quantity: ${quantity}kg\n` +
-        `🏠 Room: ${chama.sharedRoom?.roomNumber || "N/A"}\n\n` +
+        `Quantity: ${quantity}kg\n` +
+        `Room: ${chama.sharedRoom?.roomNumber || "N/A"}\n\n` +
         `Admin will be notified shortly.`
       )
     }
@@ -526,12 +526,12 @@ class USSDService {
     }
 
     let info = `END ${chama.name} Members:\n\n`
-    info += `👥 Total: ${activeMembers.length}\n\n`
+    info += `Total: ${activeMembers.length}\n\n`
 
     activeMembers.slice(0, 8).forEach((member, index) => {
       info += `${index + 1}. ${member.name}\n`
       if (member.phone) {
-        info += `   📞 ${member.phone}\n`
+        info += `   Phone: ${member.phone}\n`
       }
     })
 
@@ -557,10 +557,10 @@ class USSDService {
     const marketDaysPerMonth = chama.marketDays?.length * 4 || 0
 
     const info = `END Power Savings Report:\n\n` +
-      `⚡ Energy Saved: ${savings.toFixed(2)}kWh\n` +
-  `💰 Money Saved: KSH ${moneySaved.toFixed(2)}\n` +
-      `📅 Market Days/Month: ${marketDaysPerMonth}\n` +
-      `🌱 CO2 Reduced: ${(savings * 0.5).toFixed(2)}kg\n\n` +
+      `Energy Saved: ${savings.toFixed(2)}kWh\n` +
+      `Money Saved: KSH ${moneySaved.toFixed(2)}\n` +
+      `Market Days/Month: ${marketDaysPerMonth}\n` +
+      `CO2 Reduced: ${(savings * 0.5).toFixed(2)}kg\n\n` +
       `Your Chama is saving money and helping the environment!`
 
     return this.endSession(info)
