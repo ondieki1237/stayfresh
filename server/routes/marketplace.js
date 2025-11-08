@@ -1,9 +1,262 @@
 import express from "express"
 import MarketplaceListing from "../models/MarketplaceListing.js"
 import Produce from "../models/Produce.js"
+import Stocking from "../models/Stocking.js"
 import { authMiddleware } from "../middleware/auth.js"
 
 const router = express.Router()
+
+// Get all available produce from cold storage (Stocking model + Legacy Produce)
+router.get("/produce", async (req, res) => {
+  try {
+    const { produceType, minPrice, maxPrice, condition } = req.query
+    
+    // Query for approved stockings
+    let stockingQuery = {
+      approvalStatus: "Approved",
+      status: { $in: ["Monitoring", "Target Reached", "Stocked"] }
+    }
+    
+    if (produceType) stockingQuery.produceType = produceType
+    if (condition) stockingQuery.condition = condition
+    if (minPrice || maxPrice) {
+      stockingQuery.currentMarketPrice = {}
+      if (minPrice) stockingQuery.currentMarketPrice.$gte = Number(minPrice)
+      if (maxPrice) stockingQuery.currentMarketPrice.$lte = Number(maxPrice)
+    }
+    
+    // Query for legacy produce (active and not sold)
+    let legacyQuery = {
+      sold: false,
+      status: { $in: ["Active", "Listed"] }
+    }
+    
+    if (produceType) legacyQuery.produceType = produceType
+    if (condition) legacyQuery.condition = condition
+    if (minPrice || maxPrice) {
+      legacyQuery.currentMarketPrice = {}
+      if (minPrice) legacyQuery.currentMarketPrice.$gte = Number(minPrice)
+      if (maxPrice) legacyQuery.currentMarketPrice.$lte = Number(maxPrice)
+    }
+    
+    // Fetch both approved stockings and legacy produce
+    const [stockings, legacyProduce] = await Promise.all([
+      Stocking.find(stockingQuery)
+        .populate("farmer", "firstName lastName phone email")
+        .populate("room", "roomNumber temperature")
+        .sort({ stockedAt: -1 })
+        .lean(),
+      Produce.find(legacyQuery)
+        .populate("farmer", "firstName lastName phone email")
+        .populate("room", "roomNumber temperature")
+        .sort({ storageDate: -1 })
+        .lean()
+    ])
+    
+    // Transform approved stockings for marketplace display
+    const stockingItems = stockings.map(item => ({
+      _id: item._id,
+      name: item.produceType,
+      image: getProduceImage(item.produceType),
+      price: item.currentMarketPrice,
+      quantity: item.quantity,
+      condition: item.condition,
+      farmer: {
+        name: `${item.farmer.firstName} ${item.farmer.lastName}`,
+        phone: item.farmer.phone,
+        email: item.farmer.email
+      },
+      room: item.room.roomNumber,
+      stockedAt: item.stockedAt,
+      estimatedValue: item.estimatedValue,
+      source: "stocking" // Mark as new system
+    }))
+    
+    // Transform legacy produce for marketplace display
+    const legacyItems = legacyProduce.map(item => ({
+      _id: item._id,
+      name: item.produceType,
+      image: getProduceImage(item.produceType),
+      price: item.currentMarketPrice,
+      quantity: item.quantity,
+      condition: item.condition,
+      farmer: {
+        name: `${item.farmer.firstName} ${item.farmer.lastName}`,
+        phone: item.farmer.phone,
+        email: item.farmer.email
+      },
+      room: item.room.roomNumber,
+      stockedAt: item.storageDate || item.createdAt,
+      estimatedValue: item.quantity * item.currentMarketPrice,
+      source: "legacy" // Mark as legacy
+    }))
+    
+    // Combine and sort by date (newest first)
+    const allProduce = [...stockingItems, ...legacyItems].sort((a, b) => 
+      new Date(b.stockedAt) - new Date(a.stockedAt)
+    )
+    
+    res.json(allProduce)
+  } catch (error) {
+    console.error("Get marketplace produce error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Get marketplace statistics
+router.get("/produce/stats", async (req, res) => {
+  try {
+    // Count approved stockings
+    const totalStockings = await Stocking.countDocuments({
+      approvalStatus: "Approved",
+      status: { $in: ["Monitoring", "Target Reached", "Stocked"] }
+    })
+    
+    // Count legacy produce
+    const totalLegacy = await Produce.countDocuments({
+      sold: false,
+      status: { $in: ["Active", "Listed"] }
+    })
+    
+    // Get produce types from stockings
+    const stockingTypes = await Stocking.aggregate([
+      {
+        $match: {
+          approvalStatus: "Approved",
+          status: { $in: ["Monitoring", "Target Reached", "Stocked"] }
+        }
+      },
+      {
+        $group: {
+          _id: "$produceType",
+          count: { $sum: 1 },
+          totalQuantity: { $sum: "$quantity" }
+        }
+      }
+    ])
+    
+    // Get produce types from legacy
+    const legacyTypes = await Produce.aggregate([
+      {
+        $match: {
+          sold: false,
+          status: { $in: ["Active", "Listed"] }
+        }
+      },
+      {
+        $group: {
+          _id: "$produceType",
+          count: { $sum: 1 },
+          totalQuantity: { $sum: "$quantity" }
+        }
+      }
+    ])
+    
+    // Get total quantities
+    const stockingQuantity = await Stocking.aggregate([
+      {
+        $match: {
+          approvalStatus: "Approved",
+          status: { $in: ["Monitoring", "Target Reached", "Stocked"] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$quantity" }
+        }
+      }
+    ])
+    
+    const legacyQuantity = await Produce.aggregate([
+      {
+        $match: {
+          sold: false,
+          status: { $in: ["Active", "Listed"] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$quantity" }
+        }
+      }
+    ])
+    
+    // Merge produce types (combine duplicates)
+    const typesMap = new Map()
+    
+    stockingTypes.forEach(type => {
+      typesMap.set(type._id, {
+        _id: type._id,
+        count: type.count,
+        totalQuantity: type.totalQuantity
+      })
+    })
+    
+    legacyTypes.forEach(type => {
+      if (typesMap.has(type._id)) {
+        const existing = typesMap.get(type._id)
+        existing.count += type.count
+        existing.totalQuantity += type.totalQuantity
+      } else {
+        typesMap.set(type._id, {
+          _id: type._id,
+          count: type.count,
+          totalQuantity: type.totalQuantity
+        })
+      }
+    })
+    
+    const allCategories = Array.from(typesMap.values())
+    
+    res.json({
+      totalListings: totalStockings + totalLegacy,
+      totalQuantity: (stockingQuantity[0]?.total || 0) + (legacyQuantity[0]?.total || 0),
+      produceTypes: allCategories.length,
+      categories: allCategories,
+      breakdown: {
+        approved: totalStockings,
+        legacy: totalLegacy
+      }
+    })
+  } catch (error) {
+    console.error("Get marketplace stats error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Helper function to get produce image
+function getProduceImage(produceType) {
+  const imageMap = {
+    "Tomatoes": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400",
+    "Potatoes": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400",
+    "Onions": "https://images.unsplash.com/photo-1508747703725-719777637510?w=400",
+    "Carrots": "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400",
+    "Cabbage": "https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400",
+    "Spinach": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400",
+    "Kale": "https://images.unsplash.com/photo-1590777675726-1de89d92b0cb?w=400",
+    "Lettuce": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400",
+    "Broccoli": "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400",
+    "Cauliflower": "https://images.unsplash.com/photo-1568584711-5e87db4b9442?w=400",
+    "Peppers": "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400",
+    "Cucumbers": "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=400",
+    "Beans": "https://images.unsplash.com/photo-1589621316382-008455b857cd?w=400",
+    "Peas": "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400",
+    "Maize": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400",
+    "Bananas": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400",
+    "Mangoes": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=400",
+    "Avocados": "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400",
+    "Oranges": "https://images.unsplash.com/photo-1547514701-42782101795e?w=400",
+    "Apples": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400",
+    "Strawberries": "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400",
+    "Passion Fruit": "https://images.unsplash.com/photo-1595576464634-c7e02b96e27f?w=400",
+    "Pineapples": "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=400",
+    "Other": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400"
+  }
+  
+  return imageMap[produceType] || imageMap["Other"]
+}
 
 // Get all active listings
 router.get("/", async (req, res) => {

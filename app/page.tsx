@@ -1,11 +1,15 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import LoginForm from "@/components/auth/login-form"
 import RegisterForm from "@/components/auth/register-form"
+import { Button } from "@/components/ui/button"
+import { ShoppingCart } from "lucide-react"
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
+  const router = useRouter()
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-chart-4/5 p-4">
@@ -21,6 +25,16 @@ export default function Home() {
             Stay Fresh
           </h1>
           <p className="text-muted-foreground">Smart cold storage for farmers</p>
+          
+          {/* Market Link */}
+          <Button
+            onClick={() => router.push("/market")}
+            variant="outline"
+            className="mt-4 bg-gradient-to-r from-yellow-400 to-green-600 text-white border-0 hover:from-yellow-500 hover:to-green-700"
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Browse Market
+          </Button>
         </div>
 
         {/* Tabs */}

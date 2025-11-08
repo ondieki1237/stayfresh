@@ -4,6 +4,8 @@ import Room from "../models/Room.js"
 import Billing from "../models/Billing.js"
 import Produce from "../models/Produce.js"
 import Sensor from "../models/Sensor.js"
+import Stocking from "../models/Stocking.js"
+import { authMiddleware } from "../middleware/auth.js"
 
 const router = express.Router()
 
@@ -245,5 +247,157 @@ router.get("/analytics/revenue", async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 })
+
+// Convert legacy produce to approved stockings
+router.post("/migrate-legacy-produce", authMiddleware, async (req, res) => {
+  try {
+    const { adminId } = req.body
+    
+    // Use authenticated user as admin if not provided
+    const approverAdminId = adminId || req.user.id
+    
+    // Find all legacy produce (not sold, active)
+    const legacyProduce = await Produce.find({
+      sold: false,
+      status: { $in: ["Active", "Listed"] }
+    })
+    .populate("farmer")
+    .populate("room")
+    
+    if (legacyProduce.length === 0) {
+      return res.json({
+        success: true,
+        message: "No legacy produce to migrate",
+        migrated: 0,
+        errors: []
+      })
+    }
+    
+    const migrations = []
+    const errors = []
+    
+    for (const produce of legacyProduce) {
+      try {
+        // Map produce type to enum values
+        const produceType = mapProduceType(produce.produceType)
+        
+        // Map condition
+        const condition = mapCondition(produce.condition)
+        
+        // Calculate estimated value
+        const estimatedValue = produce.quantity * (produce.currentMarketPrice || 0)
+        
+        // Create stocking object
+        const stockingData = {
+          room: produce.room._id,
+          farmer: produce.farmer._id,
+          produceType: produceType,
+          quantity: produce.quantity,
+          estimatedValue: estimatedValue,
+          condition: condition,
+          targetPrice: produce.expectedPeakPrice || produce.minimumSellingPrice || produce.currentMarketPrice,
+          currentMarketPrice: produce.currentMarketPrice || 0,
+          status: "Approved",
+          approvalStatus: "Approved",
+          approvedBy: approverAdminId,
+          approvedAt: new Date(),
+          stockedAt: produce.storageDate || produce.createdAt,
+          notes: `Migrated from legacy Produce model. Original ID: ${produce._id}`,
+          priceHistory: [{
+            price: produce.currentMarketPrice || 0,
+            checkedAt: produce.storageDate || produce.createdAt
+          }]
+        }
+        
+        // Create new stocking
+        const stocking = new Stocking(stockingData)
+        await stocking.save()
+        
+        // Update room occupancy
+        const room = await Room.findById(produce.room._id)
+        if (room) {
+          room.currentOccupancy += produce.quantity
+          await room.save()
+        }
+        
+        // Mark legacy produce as migrated
+        produce.status = "Removed"
+        produce.notes = produce.notes 
+          ? `${produce.notes}\n[MIGRATED to Stocking: ${stocking._id}]`
+          : `[MIGRATED to Stocking: ${stocking._id}]`
+        await produce.save()
+        
+        migrations.push({
+          legacyId: produce._id,
+          stockingId: stocking._id,
+          produceType: produce.produceType,
+          quantity: produce.quantity,
+          farmer: `${produce.farmer.firstName} ${produce.farmer.lastName}`
+        })
+        
+      } catch (error) {
+        console.error(`Error migrating produce ${produce._id}:`, error.message)
+        errors.push({
+          produceId: produce._id,
+          produceType: produce.produceType,
+          error: error.message
+        })
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Successfully migrated ${migrations.length} legacy produce records`,
+      migrated: migrations.length,
+      failed: errors.length,
+      details: migrations,
+      errors: errors
+    })
+    
+  } catch (error) {
+    console.error("Migration error:", error)
+    res.status(500).json({ 
+      success: false,
+      message: error.message,
+      migrated: 0,
+      errors: [{ error: error.message }]
+    })
+  }
+})
+
+// Helper function to map produce type
+function mapProduceType(type) {
+  const validTypes = [
+    "Tomatoes", "Potatoes", "Onions", "Carrots", "Cabbage",
+    "Spinach", "Kale", "Lettuce", "Broccoli", "Cauliflower",
+    "Peppers", "Cucumbers", "Beans", "Peas", "Maize",
+    "Bananas", "Mangoes", "Avocados", "Oranges", "Apples",
+    "Strawberries", "Passion Fruit", "Pineapples"
+  ]
+  
+  // Direct match
+  if (validTypes.includes(type)) return type
+  
+  // Case-insensitive search
+  const matched = validTypes.find(
+    valid => valid.toLowerCase() === type.toLowerCase()
+  )
+  
+  return matched || "Other"
+}
+
+// Helper function to map condition
+function mapCondition(condition) {
+  const conditionMap = {
+    "Excellent": "Fresh",
+    "Fresh": "Fresh",
+    "Good": "Good",
+    "Fair": "Fair",
+    "Poor": "Needs Attention",
+    "Spoiled": "Needs Attention"
+  }
+  
+  return conditionMap[condition] || "Good"
+}
 
 export default router

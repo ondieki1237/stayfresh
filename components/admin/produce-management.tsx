@@ -5,14 +5,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { API_BASE } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/hooks/use-toast"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { RefreshCw, ArrowRight } from "lucide-react"
 
 export default function ProduceManagement() {
   const [produce, setProduce] = useState<any[]>([])
   const [approvedStockings, setApprovedStockings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [migrating, setMigrating] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState<"all" | "Fresh" | "Sold" | "Spoiled">("all")
   const [view, setView] = useState<"legacy" | "approved">("approved")
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchProduce()
@@ -21,7 +26,25 @@ export default function ProduceManagement() {
 
   const fetchProduce = async () => {
     try {
-      const response = await fetch("https://www.kisumu.codewithseth.co.ke/api/produce")
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE}/produce`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      
+      // Check if response is ok and content-type is JSON
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Expected JSON but got:", contentType)
+        setProduce([])
+        return
+      }
+      
       const data = await response.json()
       setProduce(Array.isArray(data) ? data : [])
     } catch (error) {
@@ -40,11 +63,81 @@ export default function ProduceManagement() {
           Authorization: `Bearer ${token}`,
         },
       })
+      
+      // Check if response is ok and content-type is JSON
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Expected JSON but got:", contentType)
+        setApprovedStockings([])
+        return
+      }
+      
       const data = await response.json()
       setApprovedStockings(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching approved stockings:", error)
       setApprovedStockings([])
+    }
+  }
+
+  const handleMigrateLegacy = async () => {
+    setMigrating(true)
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE}/admin/migrate-legacy-produce`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      })
+      
+      // Check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      // Check content type before parsing JSON
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned non-JSON response")
+      }
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        toast({
+          title: "✅ Migration Successful",
+          description: `${data.migrated} legacy produce records converted to approved stockings${data.failed > 0 ? `. ${data.failed} failed.` : "."}`,
+        })
+        
+        // Refresh both lists
+        await fetchProduce()
+        await fetchApprovedStockings()
+        
+        // Switch to approved view to show migrated items
+        setView("approved")
+      } else {
+        toast({
+          title: "❌ Migration Failed",
+          description: data.message || "Failed to migrate legacy produce",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error migrating legacy produce:", error)
+      toast({
+        title: "❌ Migration Error",
+        description: error instanceof Error ? error.message : "An error occurred while migrating legacy produce",
+        variant: "destructive",
+      })
+    } finally {
+      setMigrating(false)
     }
   }
 
@@ -93,7 +186,64 @@ export default function ProduceManagement() {
             }
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {/* Migration Button */}
+          {produce.filter(p => p.status === "Active" || p.status === "Listed").length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-gradient-to-r from-yellow-400 to-green-600 text-white border-0 hover:from-yellow-500 hover:to-green-700"
+                  disabled={migrating}
+                >
+                  {migrating ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Migrating...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Convert Legacy to Approved
+                    </>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Convert Legacy Produce?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <div>
+                      This will convert all active legacy produce ({produce.filter(p => p.status === "Active" || p.status === "Listed").length} items) 
+                      to the new approved stocking system.
+                    </div>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
+                      <strong>What will happen:</strong>
+                      <ul className="list-disc ml-5 mt-2 space-y-1">
+                        <li>All active legacy produce will be converted to approved stockings</li>
+                        <li>Room occupancy will be updated automatically</li>
+                        <li>Legacy records will be marked as "Removed" for reference</li>
+                        <li>Converted items will appear in "Approved Stockings" view</li>
+                      </ul>
+                    </div>
+                    <div className="text-sm font-semibold">
+                      This action cannot be easily undone. Continue?
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleMigrateLegacy}
+                    className="bg-gradient-to-r from-yellow-400 to-green-600 hover:from-yellow-500 hover:to-green-700"
+                  >
+                    Yes, Convert All
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          
           <Button
             variant={view === "approved" ? "default" : "outline"}
             onClick={() => setView("approved")}
