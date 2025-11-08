@@ -28,7 +28,7 @@ The USSD system now allows non-members to register new chamas and join existing 
 ### Flow 1: New User Registration
 
 ```
-User dials: *384*5000#
+User dials: *384*31306#
 ↓
 System: "Welcome to Stay Fresh Cold Storage
          You are not registered yet.
@@ -83,7 +83,7 @@ System: "✅ Chama Registered Successfully!
 ### Flow 2: Join Existing Chama
 
 ```
-User dials: *384*5000#
+User dials: *384*31306#
 ↓
 System: "Welcome to Stay Fresh Cold Storage
          You are not registered yet.
@@ -124,7 +124,7 @@ System: "Join Request Submitted
 ### Flow 3: Existing Member Access
 
 ```
-User dials: *384*5000#
+User dials: *384*31306#
 ↓
 System: "Welcome to Stay Fresh - Kisumu Farmers Chama
          

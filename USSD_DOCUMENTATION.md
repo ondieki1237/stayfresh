@@ -4,7 +4,15 @@
 The USSD (Unstructured Supplementary Service Data) system provides feature phone access to Stay Fresh services for Chama members who may not have smartphones or internet connectivity.
 
 ## USSD Code
-**Main Code:** `*384*5000#`
+# USSD Integration Documentation
+
+## Overview
+
+The Stay Fresh USSD service allows chama members to access their cold storage information using basic feature phones. Members can dial a USSD code to check room status, market schedules, produce information, and more.
+
+## USSD Code
+
+**Main Service Code:** `*384*31306#`
 
 ## Features
 
@@ -54,28 +62,12 @@ The USSD (Unstructured Supplementary Service Data) system provides feature phone
 ## Menu Flow
 
 ```
-*384*5000#
-├─ 1. Room Status
-│  └─ Shows: Temp, Humidity, Power, Capacity
-│
-├─ 2. Market Schedule
-│  └─ Shows: Next market day, times, all schedules
-│
-├─ 3. Produce Info
-│  └─ Shows: Total quantity, items list, prices
-│
-├─ 4. Billing
-│  └─ Shows: Total bill, per member, energy used
-│
-├─ 5. Request Release
-│  ├─ Enter quantity (kg)
-│  └─ Confirmation sent to admin
-│
-├─ 6. Members
-│  └─ Shows: List of active members + contacts
-│
-└─ 7. Power Savings
-   └─ Shows: Energy saved, money saved, CO2 reduced
+## Example Flow
+
+1. User dials `*384*31306#`
+2. System checks if phone number is registered in any chama
+3. If found, shows main menu with 7 options
+4. User selects option (e.g., "1" for Room Status)
 ```
 
 ## API Integration
@@ -89,11 +81,12 @@ POST https://yourdomain.com/api/ussd
 
 #### Request Format
 ```json
+```json
 {
-  "sessionId": "ATUid_123456789",
-  "serviceCode": "*384*5000#",
+  "sessionId": "ATUid_session_id",
+  "serviceCode": "*384*31306#",
   "phoneNumber": "+254712345678",
-  "text": "1*2"
+  "text": ""
 }
 ```
 
@@ -111,7 +104,7 @@ POST https://yourdomain.com/api/ussd
 2. **Configure Environment Variables**
    ```bash
    # Add to .env
-   USSD_SERVICE_CODE=*384*5000#
+   USSD_SERVICE_CODE=*384*31306#
    USSD_CALLBACK_URL=https://yourdomain.com/api/ussd
    AFRICASTALKING_USERNAME=your_username
    AFRICASTALKING_API_KEY=your_api_key

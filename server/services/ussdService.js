@@ -9,7 +9,7 @@ import Billing from "../models/Billing.js"
  * Provides access to room and chama information via USSD codes
  * Allows non-members to register new chamas
  * 
- * Main USSD Code: *384*5000#
+ * Main USSD Code: *384*31306#
  * 
  * Menu Structure (Members):
  * 1. Room Status (Temperature, Humidity, Power)

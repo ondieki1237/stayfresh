@@ -2,7 +2,7 @@
 
 ## Dial Code
 ```
-*384*5000#
+*384*31306#
 ```
 
 ## 🆕 NEW: Self-Registration Flow
@@ -10,7 +10,7 @@
 ### For Non-Members
 
 ```
-*384*5000#
+*384*31306#
 ↓
 CON Welcome to Stay Fresh Cold Storage
 
@@ -55,7 +55,7 @@ Shows:
 ## 👥 Existing Members Menu
 
 ```
-*384*5000#
+*384*31306#
 ↓
 CON Welcome to Stay Fresh - [Your Chama Name]
 
@@ -162,7 +162,7 @@ END ... = End session (final message)
 ## 🚨 Common Issues
 
 ### "Session expired"
-**Solution:** Dial *384*5000# again to restart
+**Solution:** Dial *384*31306# again to restart
 
 ### "Name too short"
 **Solution:** Enter at least 3 characters
@@ -170,9 +170,9 @@ END ... = End session (final message)
 ### "Invalid number"
 **Solution:** Enter member count between 2-100
 
-### "You are not registered"
+### Issue: "You are not registered"
 **Solution:** 
-- Non-member: Select option 1 to register
+- Non-member: Dial *384*31306# and select option 1 to register
 - Existing member: Contact admin to add your phone
 
 ---

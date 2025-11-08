@@ -24,7 +24,7 @@ echo ""
 
 # Test 1: Initial Menu (Non-Member)
 echo -e "${GREEN}Test 1: Show Registration Menu${NC}"
-echo -e "${YELLOW}Simulating: User dials *384*5000#${NC}"
+echo -e "${YELLOW}Simulating: User dials *384*31306#${NC}"
 curl -s -X POST "$API_URL/api/ussd/test" \
   -H "Content-Type: application/json" \
   -d "{\"phoneNumber\": \"$PHONE\", \"text\": \"\"}" | jq -r '.response'

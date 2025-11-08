@@ -24,6 +24,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { icon: "📊", label: "Dashboard", href: "/admin" },
+    { icon: "⏳", label: "Pending Bookings", href: "/admin/pending-bookings" },
     { icon: "👥", label: "Farmers", href: "/admin/farmers" },
     { icon: "🏠", label: "Rooms", href: "/admin/rooms" },
     { icon: "📦", label: "Produce", href: "/admin/produce" },

@@ -27,9 +27,20 @@ const stockingSchema = new mongoose.Schema(
     priceAlertSent: { type: Boolean, default: false },
     status: {
       type: String,
-      enum: ["Stocked", "Monitoring", "Target Reached", "Sold", "Removed"],
-      default: "Monitoring"
+      enum: ["Pending", "Approved", "Rejected", "Stocked", "Monitoring", "Target Reached", "Sold", "Removed"],
+      default: "Pending"
     },
+    approvalStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending"
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Farmer" // Admin who approved
+    },
+    approvedAt: { type: Date },
+    rejectionReason: { type: String },
     stockedAt: { type: Date, default: Date.now },
     targetReachedAt: { type: Date },
     notes: { type: String },

@@ -140,7 +140,7 @@ router.get("/docs", (req, res) => {
   res.json({
     service: "Stay Fresh USSD Service",
     version: "1.0.0",
-    ussdCode: "*384*5000#",
+    ussdCode: "*384*31306#",
     description: "USSD interface for Chama members to access room information",
     features: [
       "Check room status (temperature, humidity, power)",
@@ -169,7 +169,7 @@ router.get("/docs", (req, res) => {
     },
     requestFormat: {
       sessionId: "string (unique session identifier)",
-      serviceCode: "string (*384*5000#)",
+      serviceCode: "string (*384*31306#)",
       phoneNumber: "string (+254712345678)",
       text: "string (user input, empty for main menu)",
     },

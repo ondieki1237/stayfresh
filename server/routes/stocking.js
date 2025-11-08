@@ -52,7 +52,7 @@ router.post("/book", authMiddleware, async (req, res) => {
     
     const currentMarketPrice = latestMarketData?.currentPrice || 0
 
-    // Create stocking
+    // Create stocking with pending status
     const stocking = new Stocking({
       room: roomId,
       farmer: farmerId,
@@ -63,6 +63,8 @@ router.post("/book", authMiddleware, async (req, res) => {
       targetPrice,
       currentMarketPrice,
       notes,
+      status: "Pending",
+      approvalStatus: "Pending",
       priceHistory: [{
         price: currentMarketPrice,
         checkedAt: new Date()
@@ -71,18 +73,13 @@ router.post("/book", authMiddleware, async (req, res) => {
 
     await stocking.save()
 
-    // Update room occupancy
-    room.currentOccupancy = totalStocked + quantity
-    if (room.status === "Available") {
-      room.status = "Occupied"
-    }
-    await room.save()
-
+    // Don't update room occupancy until approved
+    
     // Populate for response
     await stocking.populate("room farmer")
 
     res.status(201).json({
-      message: "Stocking booked successfully! You'll be notified when target price is reached.",
+      message: "Booking submitted successfully! Waiting for admin approval.",
       stocking
     })
   } catch (error) {
@@ -268,6 +265,135 @@ router.get("/farmer/:farmerId/stats", authMiddleware, async (req, res) => {
     res.json(stats)
   } catch (error) {
     console.error("Get stocking stats error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Get all pending bookings (admin only)
+router.get("/pending/all", authMiddleware, async (req, res) => {
+  try {
+    const pendingBookings = await Stocking.find({ approvalStatus: "Pending" })
+      .populate("farmer", "firstName lastName email phone")
+      .populate("room", "roomNumber capacity currentOccupancy")
+      .sort({ createdAt: -1 })
+
+    res.json(pendingBookings)
+  } catch (error) {
+    console.error("Get pending bookings error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Approve booking (admin only)
+router.patch("/:id/approve", authMiddleware, async (req, res) => {
+  try {
+    const stocking = await Stocking.findById(req.params.id)
+      .populate("room")
+      .populate("farmer")
+    
+    if (!stocking) {
+      return res.status(404).json({ message: "Booking not found" })
+    }
+
+    if (stocking.approvalStatus !== "Pending") {
+      return res.status(400).json({ 
+        message: `Booking already ${stocking.approvalStatus.toLowerCase()}` 
+      })
+    }
+
+    // Check room capacity again
+    const currentStockings = await Stocking.find({ 
+      room: stocking.room._id, 
+      status: { $in: ["Approved", "Stocked", "Monitoring", "Target Reached"] }
+    })
+    
+    const totalStocked = currentStockings.reduce((sum, s) => sum + s.quantity, 0)
+    if (totalStocked + stocking.quantity > stocking.room.capacity) {
+      return res.status(400).json({ 
+        message: `Room capacity exceeded. Available: ${stocking.room.capacity - totalStocked}kg, Requested: ${stocking.quantity}kg` 
+      })
+    }
+
+    // Update stocking
+    stocking.approvalStatus = "Approved"
+    stocking.status = "Monitoring"
+    stocking.approvedBy = req.user.id
+    stocking.approvedAt = new Date()
+    await stocking.save()
+
+    // Update room occupancy
+    const room = stocking.room
+    room.currentOccupancy = totalStocked + stocking.quantity
+    if (room.status === "Available") {
+      room.status = "Occupied"
+    }
+    await room.save()
+
+    await stocking.populate("approvedBy", "firstName lastName")
+
+    res.json({
+      message: "Booking approved successfully",
+      stocking
+    })
+  } catch (error) {
+    console.error("Approve booking error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Reject booking (admin only)
+router.patch("/:id/reject", authMiddleware, async (req, res) => {
+  try {
+    const { reason } = req.body
+    
+    const stocking = await Stocking.findById(req.params.id)
+      .populate("farmer")
+      .populate("room")
+    
+    if (!stocking) {
+      return res.status(404).json({ message: "Booking not found" })
+    }
+
+    if (stocking.approvalStatus !== "Pending") {
+      return res.status(400).json({ 
+        message: `Booking already ${stocking.approvalStatus.toLowerCase()}` 
+      })
+    }
+
+    // Update stocking
+    stocking.approvalStatus = "Rejected"
+    stocking.status = "Rejected"
+    stocking.rejectionReason = reason || "No reason provided"
+    stocking.approvedBy = req.user.id
+    stocking.approvedAt = new Date()
+    await stocking.save()
+
+    await stocking.populate("approvedBy", "firstName lastName")
+
+    res.json({
+      message: "Booking rejected",
+      stocking
+    })
+  } catch (error) {
+    console.error("Reject booking error:", error)
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// Get all approved stockings (for produce section)
+router.get("/approved/all", authMiddleware, async (req, res) => {
+  try {
+    const approvedStockings = await Stocking.find({ 
+      approvalStatus: "Approved",
+      status: { $in: ["Approved", "Monitoring", "Target Reached", "Stocked"] }
+    })
+      .populate("farmer", "firstName lastName email")
+      .populate("room", "roomNumber capacity")
+      .sort({ approvedAt: -1 })
+
+    res.json(approvedStockings)
+  } catch (error) {
+    console.error("Get approved stockings error:", error)
     res.status(500).json({ message: error.message })
   }
 })
