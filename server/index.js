@@ -23,32 +23,14 @@ dotenv.config()
 
 const app = express()
 
-// Middleware - CORS Configuration
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001', 
-  'https://garage48.codewithseth.co.ke',
-  'https://www.garage48.codewithseth.co.ke',
-  'https://kisumu.codewithseth.co.ke',
-  'https://www.kisumu.codewithseth.co.ke'
-]
-
+// Middleware - CORS Configuration (Allow ALL origins for web and mobile apps)
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
-    if (!origin) return callback(null, true)
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-      callback(null, true)
-    } else {
-      console.log('❌ CORS blocked origin:', origin)
-      callback(null, true) // Still allow for now, just log
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  origin: true, // Allow all origins (including capacitor://, http://, https://)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 }))
 
 // Handle preflight requests
