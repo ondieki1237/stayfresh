@@ -66,6 +66,25 @@ const produceSchema = new mongoose.Schema(
       default: "Active"
     },
     
+    // Loan collateral tracking
+    isPledged: { 
+      type: Boolean, 
+      default: false 
+    },
+    pledgedToLoan: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Loan" 
+    },
+    collateralValue: { 
+      type: Number,
+      min: 0
+    }, // Valuation when pledged
+    pledgedAt: { type: Date },
+    pledgedQuantity: { 
+      type: Number,
+      min: 0
+    }, // Can pledge partial quantity
+    
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true },

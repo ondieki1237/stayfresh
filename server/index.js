@@ -16,6 +16,7 @@ import ussdRoutes from "./routes/ussd.js"
 import stockingRoutes from "./routes/stocking.js"
 import predictionsRoutes from "./routes/predictions.js"
 import marketInsightsRoutes from "./routes/market-insights.js"
+import loanRoutes from "./routes/loans.js"
 import { startPowerScheduler } from "./services/powerScheduler.js"
 import { startPriceMonitoring } from "./services/priceMonitor.js"
 
@@ -76,6 +77,7 @@ app.use("/api/ussd", ussdRoutes)
 app.use("/api/stocking", stockingRoutes)
 app.use("/api/predictions", predictionsRoutes)
 app.use("/api/market-insights", marketInsightsRoutes)
+app.use("/api/loans", loanRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
