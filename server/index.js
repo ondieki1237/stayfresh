@@ -23,12 +23,32 @@ dotenv.config()
 
 const app = express()
 
-// Middleware - CORS Configuration (Allow all origins)
+// Middleware - CORS Configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001', 
+  'https://garage48.codewithseth.co.ke',
+  'https://www.garage48.codewithseth.co.ke',
+  'https://kisumu.codewithseth.co.ke',
+  'https://www.kisumu.codewithseth.co.ke'
+]
+
 app.use(cors({
-  origin: '*', // Allow all origins
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
+    if (!origin) return callback(null, true)
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true)
+    } else {
+      console.log('❌ CORS blocked origin:', origin)
+      callback(null, true) // Still allow for now, just log
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }))
 
 // Handle preflight requests
@@ -36,6 +56,12 @@ app.options('*', cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// Request logging middleware (for debugging)
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path} - Origin: ${req.get('origin') || 'No origin'}`)
+  next()
+})
 
 // Middleware to remove trailing slashes from URLs
 app.use((req, res, next) => {
@@ -71,7 +97,21 @@ app.use("/api/market-insights", marketInsightsRoutes)
 
 // Health check
 app.get("/api/health", (req, res) => {
-  res.json({ status: "API is running", timestamp: new Date() })
+  res.json({ 
+    status: "API is running", 
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV || 'development',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  })
+})
+
+// Root route
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Stay Fresh API Server",
+    version: "1.0.0",
+    health: "/api/health"
+  })
 })
 
 const PORT = process.env.PORT || 5000
