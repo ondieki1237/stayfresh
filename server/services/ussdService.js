@@ -5,12 +5,13 @@ import Produce from "../models/Produce.js"
 import Billing from "../models/Billing.js"
 
 /**
- * USSD Service for Chama Members
+ * USSD Service for Chama Members and Registration
  * Provides access to room and chama information via USSD codes
+ * Allows non-members to register new chamas
  * 
  * Main USSD Code: *384*5000#
  * 
- * Menu Structure:
+ * Menu Structure (Members):
  * 1. Room Status (Temperature, Humidity, Power)
  * 2. Market Schedule (Next market day, power schedule)
  * 3. Produce Info (Quantity, types, status)
@@ -18,7 +19,15 @@ import Billing from "../models/Billing.js"
  * 5. Request Release (Notify admin)
  * 6. Members (View chama members)
  * 7. Power Savings (Electricity savings)
+ * 
+ * Menu Structure (Non-Members):
+ * 1. Register New Chama
+ * 2. Join Existing Chama
+ * 3. Contact Support
  */
+
+// Store registration sessions temporarily (in production, use Redis)
+const registrationSessions = new Map();
 
 class USSDService {
   /**
@@ -32,10 +41,25 @@ class USSDService {
       // Find chama member by phone number
       const chama = await this.findChamaByPhone(phoneNumber)
       
-      if (!chama) {
-        return this.endSession("You are not registered in any Chama. Contact admin for assistance.")
+      // Check if user is in a registration session
+      const hasSession = registrationSessions.has(phoneNumber);
+      
+      if (!chama && !hasSession && text === "") {
+        // New user - show registration menu
+        return this.showRegistrationMenu()
+      }
+      
+      if (!chama && hasSession) {
+        // Continue registration flow
+        return await this.handleRegistration(phoneNumber, text)
+      }
+      
+      if (!chama && !hasSession && text !== "") {
+        // Non-member selecting from registration menu
+        return await this.handleRegistrationMenu(phoneNumber, text)
       }
 
+      // Existing member - show normal menu
       // Parse USSD input
       const textArray = text.split("*")
       const level = textArray.length
@@ -69,6 +93,231 @@ class USSDService {
     } catch (error) {
       console.error("USSD Error:", error)
       return this.endSession("Service error. Please try again later.")
+    }
+  }
+  
+  /**
+   * Show registration menu for non-members
+   */
+  showRegistrationMenu() {
+    const menu = `CON Welcome to Stay Fresh Cold Storage\n\n` +
+      `You are not registered yet.\n\n` +
+      `1. Register New Chama\n` +
+      `2. Join Existing Chama\n` +
+      `3. Contact Support\n` +
+      `0. Exit`
+
+    return this.continueSession(menu)
+  }
+  
+  /**
+   * Handle registration menu selection
+   */
+  async handleRegistrationMenu(phoneNumber, text) {
+    const textArray = text.split("*")
+    const choice = textArray[0]
+    
+    switch (choice) {
+      case "1":
+        // Start new chama registration
+        registrationSessions.set(phoneNumber, {
+          step: 'name',
+          data: { phone: phoneNumber }
+        });
+        return this.continueSession("CON Enter your Chama name:")
+        
+      case "2":
+        // Join existing chama
+        return await this.showExistingChamas(phoneNumber, textArray)
+        
+      case "3":
+        // Contact support
+        return this.endSession(
+          "END 📞 Contact Support\n\n" +
+          "📧 Email: support@stayfresh.co.ke\n" +
+          "📱 Phone: +254 700 123 456\n" +
+          "🌐 Web: www.stayfresh.co.ke\n\n" +
+          "We'll help you get started!"
+        )
+        
+      case "0":
+        return this.endSession("END Thank you for using Stay Fresh!")
+        
+      default:
+        return this.endSession("END Invalid option. Please dial again.")
+    }
+  }
+  
+  /**
+   * Handle chama registration flow
+   */
+  async handleRegistration(phoneNumber, text) {
+    const session = registrationSessions.get(phoneNumber);
+    if (!session) {
+      return this.endSession("END Session expired. Please dial again.")
+    }
+    
+    const textArray = text.split("*")
+    const currentInput = textArray[textArray.length - 1]
+    
+    switch (session.step) {
+      case 'name':
+        if (!currentInput || currentInput.length < 3) {
+          return this.continueSession("CON Name too short. Enter Chama name (min 3 chars):")
+        }
+        session.data.name = currentInput
+        session.step = 'location'
+        registrationSessions.set(phoneNumber, session)
+        return this.continueSession("CON Enter Chama location/area:")
+        
+      case 'location':
+        if (!currentInput || currentInput.length < 3) {
+          return this.continueSession("CON Location too short. Enter location:")
+        }
+        session.data.location = currentInput
+        session.step = 'leader'
+        registrationSessions.set(phoneNumber, session)
+        return this.continueSession("CON Enter leader/chairperson name:")
+        
+      case 'leader':
+        if (!currentInput || currentInput.length < 3) {
+          return this.continueSession("CON Name too short. Enter leader name:")
+        }
+        session.data.leaderName = currentInput
+        session.step = 'members'
+        registrationSessions.set(phoneNumber, session)
+        return this.continueSession("CON How many members? (2-100):")
+        
+      case 'members':
+        const memberCount = parseInt(currentInput)
+        if (isNaN(memberCount) || memberCount < 2 || memberCount > 100) {
+          return this.continueSession("CON Invalid number. Enter members (2-100):")
+        }
+        session.data.memberCount = memberCount
+        session.step = 'confirm'
+        registrationSessions.set(phoneNumber, session)
+        
+        const confirmMsg = 
+          `CON Confirm Chama Registration:\n\n` +
+          `Name: ${session.data.name}\n` +
+          `Location: ${session.data.location}\n` +
+          `Leader: ${session.data.leaderName}\n` +
+          `Members: ${memberCount}\n\n` +
+          `1. Confirm & Register\n` +
+          `2. Cancel`
+        
+        return this.continueSession(confirmMsg)
+        
+      case 'confirm':
+        if (currentInput === '1') {
+          // Register the chama
+          try {
+            const newChama = await this.registerChama(session.data)
+            registrationSessions.delete(phoneNumber)
+            
+            return this.endSession(
+              `END ✅ Chama Registered Successfully!\n\n` +
+              `Name: ${newChama.name}\n` +
+              `ID: ${newChama._id}\n\n` +
+              `📧 You'll receive confirmation via SMS.\n` +
+              `Our team will contact you within 24 hours to complete setup.\n\n` +
+              `Thank you for choosing Stay Fresh!`
+            )
+          } catch (error) {
+            console.error("Registration error:", error)
+            registrationSessions.delete(phoneNumber)
+            return this.endSession("END Registration failed. Please contact support.")
+          }
+        } else {
+          registrationSessions.delete(phoneNumber)
+          return this.endSession("END Registration cancelled. Dial again to retry.")
+        }
+        
+      default:
+        registrationSessions.delete(phoneNumber)
+        return this.endSession("END Session error. Please dial again.")
+    }
+  }
+  
+  /**
+   * Register new chama in database
+   */
+  async registerChama(data) {
+    const chama = new Chama({
+      name: data.name,
+      location: data.location,
+      phone: data.phone,
+      members: [
+        {
+          name: data.leaderName,
+          phone: data.phone,
+          role: 'Chairperson',
+          isActive: true,
+          joinedDate: new Date()
+        }
+      ],
+      memberCount: data.memberCount,
+      registrationDate: new Date(),
+      isActive: true,
+      status: 'pending', // Pending admin approval
+      registrationMethod: 'USSD'
+    });
+    
+    await chama.save();
+    
+    // TODO: Send notification to admin
+    // TODO: Send SMS confirmation to user
+    
+    return chama;
+  }
+  
+  /**
+   * Show list of existing chamas to join
+   */
+  async showExistingChamas(phoneNumber, textArray) {
+    try {
+      const chamas = await Chama.find({ isActive: true })
+        .select('name location memberCount')
+        .limit(5)
+        .sort({ name: 1 });
+      
+      if (chamas.length === 0) {
+        return this.endSession(
+          "END No active Chamas found.\n\n" +
+          "Please register a new Chama or contact support."
+        )
+      }
+      
+      let menu = "CON Select Chama to Join:\n\n"
+      chamas.forEach((chama, index) => {
+        menu += `${index + 1}. ${chama.name}\n   📍 ${chama.location}\n   👥 ${chama.memberCount} members\n\n`
+      })
+      menu += "0. Back"
+      
+      if (textArray.length === 1) {
+        return this.continueSession(menu)
+      } else {
+        const selection = parseInt(textArray[1])
+        if (selection === 0) {
+          return this.showRegistrationMenu()
+        }
+        if (selection > 0 && selection <= chamas.length) {
+          const selectedChama = chamas[selection - 1]
+          // Store join request
+          return this.endSession(
+            `END Join Request Submitted\n\n` +
+            `Chama: ${selectedChama.name}\n\n` +
+            `The Chama admin will be notified.\n` +
+            `You'll receive SMS confirmation within 24 hours.\n\n` +
+            `For urgent requests, contact:\n` +
+            `📞 +254 700 123 456`
+          )
+        }
+        return this.endSession("END Invalid selection. Please dial again.")
+      }
+    } catch (error) {
+      console.error("Error showing chamas:", error)
+      return this.endSession("END Error loading Chamas. Please try again.")
     }
   }
 

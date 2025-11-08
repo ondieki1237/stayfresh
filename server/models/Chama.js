@@ -33,6 +33,11 @@ const chamaSchema = new mongoose.Schema(
         },
         name: String,
         phone: String,
+        role: {
+          type: String,
+          enum: ["Chairperson", "Secretary", "Treasurer", "Member"],
+          default: "Member",
+        },
         joinedDate: {
           type: Date,
           default: Date.now,
@@ -65,6 +70,10 @@ const chamaSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    memberCount: {
+      type: Number,
+      default: 0,
+    },
     totalProduce: {
       type: Number,
       default: 0,
@@ -72,6 +81,16 @@ const chamaSchema = new mongoose.Schema(
     monthlyFee: {
       type: Number,
       default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "active", "inactive", "suspended"],
+      default: "active",
+    },
+    registrationMethod: {
+      type: String,
+      enum: ["Admin", "Web", "USSD", "Mobile"],
+      default: "Admin",
     },
     isActive: {
       type: Boolean,
